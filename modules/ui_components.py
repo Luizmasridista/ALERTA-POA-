@@ -15,7 +15,7 @@ from datetime import datetime
 
 
 def render_tip_cards(all_tips):
-    """Renderiza cards de dicas de segurança em carrossel horizontal rotativo.
+    """Renderiza cards de dicas de segurança em grid responsivo e acessível.
     
     Args:
         all_tips (list): Lista de dicas/alertas para exibir
@@ -40,163 +40,243 @@ def render_tip_cards(all_tips):
         }
         return icons.get(tipo, '🔔')
     
-    def get_priority_color(prioridade):
-        """Retorna cor baseada na prioridade."""
-        colors = {
-            'Crítica': '#ff416c',
-            'Alta': '#f5576c',
-            'Média': '#00f2fe',
-            'Baixa': '#38f9d7'
+    def get_priority_config(prioridade):
+        """Retorna configuração de cores e estilo baseada na prioridade."""
+        configs = {
+            'Crítica': {
+                'background': '#dc3545',
+                'border': '#b02a37',
+                'icon_bg': 'rgba(255, 255, 255, 0.2)',
+                'text_color': '#ffffff'
+            },
+            'Alta': {
+                'background': '#fd7e14',
+                'border': '#e8650e',
+                'icon_bg': 'rgba(255, 255, 255, 0.2)',
+                'text_color': '#ffffff'
+            },
+            'Média': {
+                'background': '#0d6efd',
+                'border': '#0a58ca',
+                'icon_bg': 'rgba(255, 255, 255, 0.2)',
+                'text_color': '#ffffff'
+            },
+            'Baixa': {
+                'background': '#198754',
+                'border': '#146c43',
+                'icon_bg': 'rgba(255, 255, 255, 0.2)',
+                'text_color': '#ffffff'
+            }
         }
-        return colors.get(prioridade, '#00f2fe')
+        return configs.get(prioridade, configs['Média'])
     
     if all_tips:
-        # Duplicar as dicas para criar efeito de loop infinito
-        extended_tips = all_tips * 3  # Triplicar para garantir continuidade
+        # Limitar a 8 cards para melhor experiência
+        display_tips = all_tips[:8]
         
-        # CSS para o carrossel horizontal rotativo
-        carousel_css = """
+        # CSS moderno e acessível para cards em grid
+        modern_css = """
         <style>
-        @keyframes scroll-horizontal {
-            0% {
-                transform: translateX(0);
-            }
-            100% {
-                transform: translateX(-33.333%);
-            }
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem 0;
+            max-width: 100%;
         }
         
-        .carousel-container {
-            overflow: hidden;
-            width: 100%;
+        .tip-card {
             position: relative;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 15px;
-            padding: 20px 0;
-            margin: 20px 0;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        }
-        
-        .carousel-track {
-            display: flex;
-            width: 300%;
-            animation: scroll-horizontal 30s linear infinite;
-            gap: 20px;
-            padding: 0 20px;
-        }
-        
-        .carousel-card {
-            flex: 0 0 300px;
-            background: rgba(255, 255, 255, 0.95);
+            padding: 1.5rem;
             border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: transform 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            background: #ffffff;
         }
         
-        .carousel-card:hover {
-            transform: translateY(-5px);
+        .tip-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .tip-card:focus-within {
+            outline: 2px solid #0d6efd;
+            outline-offset: 2px;
         }
         
         .card-header {
             display: flex;
-            align-items: center;
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-bottom: 12px;
-            color: #333;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
         }
         
-        .card-icon {
-            font-size: 1.5rem;
-            margin-right: 10px;
+        .card-icon-container {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        
+        .card-title {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .card-type {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #212529;
+            margin-bottom: 0.25rem;
+            line-height: 1.3;
+        }
+        
+        .card-location {
+            font-size: 0.875rem;
+            color: #6c757d;
+            font-weight: 400;
         }
         
         .card-description {
+            color: #495057;
             font-size: 0.9rem;
             line-height: 1.5;
-            color: #555;
-            margin-bottom: 15px;
+            margin-bottom: 1rem;
         }
         
         .card-priority {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: white;
+            display: inline-flex;
+            align-items: center;
+            padding: 0.375rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            margin-top: 0.5rem;
         }
         
-        .carousel-container::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 50px;
-            height: 100%;
-            background: linear-gradient(to right, rgba(102, 126, 234, 1), transparent);
-            z-index: 2;
-            pointer-events: none;
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .tips-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                padding: 0.5rem;
+            }
+            
+            .tip-card {
+                padding: 1.25rem;
+            }
+            
+            .card-icon-container {
+                width: 36px;
+                height: 36px;
+                font-size: 1.1rem;
+            }
+            
+            .card-type {
+                font-size: 0.95rem;
+            }
+            
+            .card-description {
+                font-size: 0.85rem;
+            }
         }
         
-        .carousel-container::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 0;
-            width: 50px;
-            height: 100%;
-            background: linear-gradient(to left, rgba(118, 75, 162, 1), transparent);
-            z-index: 2;
-            pointer-events: none;
+        @media (max-width: 480px) {
+            .tip-card {
+                padding: 1rem;
+            }
+            
+            .card-header {
+                gap: 0.5rem;
+            }
+        }
+        
+        /* Estados de acessibilidade */
+        @media (prefers-reduced-motion: reduce) {
+            .tip-card {
+                transition: none;
+            }
+            
+            .tip-card:hover {
+                transform: none;
+            }
+        }
+        
+        /* Alto contraste */
+        @media (prefers-contrast: high) {
+            .tip-card {
+                border: 2px solid #000000;
+            }
+            
+            .card-type {
+                color: #000000;
+            }
+            
+            .card-description {
+                color: #000000;
+            }
         }
         </style>
         """
         
         # Renderizar CSS
-        st.markdown(carousel_css, unsafe_allow_html=True)
+        st.markdown(modern_css, unsafe_allow_html=True)
         
-        # Criar HTML do carrossel
-        carousel_html = '<div class="carousel-container"><div class="carousel-track">'
+        # Criar HTML do grid de cards
+        grid_html = '<div class="tips-grid">'
         
-        for tip in extended_tips:
+        for tip in display_tips:
             icon = get_alert_icon(tip['tipo'])
-            color = get_priority_color(tip['prioridade'])
+            config = get_priority_config(tip['prioridade'])
             
-            carousel_html += f"""
-            <div class="carousel-card">
-                <div class="card-header">
-                    <span class="card-icon">{icon}</span>
-                    <div>
-                        <div>{tip['tipo']}</div>
-                        <div style="font-size: 0.8rem; color: #666; font-weight: normal;">{tip['bairro']}</div>
+            grid_html += f"""
+            <article class="tip-card" 
+                     style="border-left-color: {config['border']};"
+                     role="article" 
+                     tabindex="0"
+                     aria-label="Dica de segurança: {tip['tipo']}">
+                
+                <header class="card-header">
+                    <div class="card-icon-container" 
+                         style="background: {config['icon_bg']}; color: {config['background']};">
+                        {icon}
                     </div>
-                </div>
+                    <div class="card-title">
+                        <h3 class="card-type">{tip['tipo']}</h3>
+                        <p class="card-location">{tip['bairro']}</p>
+                    </div>
+                </header>
+                
                 <div class="card-description">
                     {tip['descricao']}
                 </div>
-                <div class="card-priority" style="background: {color};">
-                    {tip['prioridade']}
-                </div>
-            </div>
+                
+                <footer>
+                    <span class="card-priority" 
+                          style="background: {config['background']}; color: {config['text_color']};">
+                        Prioridade {tip['prioridade']}
+                    </span>
+                </footer>
+            </article>
             """
         
-        carousel_html += '</div></div>'
+        grid_html += '</div>'
         
-        # Renderizar carrossel
-        st.markdown(carousel_html, unsafe_allow_html=True)
+        # Renderizar grid
+        st.markdown(grid_html, unsafe_allow_html=True)
         
-        # Adicionar informação sobre o carrossel
-        st.markdown("""
-        <div style="text-align: center; margin-top: 10px; color: #666; font-size: 0.8rem;">
-            🔄 Carrossel rotativo com dicas de segurança atualizadas automaticamente
-        </div>
-        """, unsafe_allow_html=True)
+        # Informação adicional
+        total_tips = len(all_tips)
+        if total_tips > 8:
+            st.info(f"💡 Exibindo 8 de {total_tips} dicas disponíveis. As dicas são priorizadas por relevância e urgência.")
         
     else:
         st.info("📊 Nenhum alerta disponível no momento.")

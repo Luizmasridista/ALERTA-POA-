@@ -51,12 +51,12 @@ def check_data_files():
     print("📁 Verificando arquivos de dados...")
     
     required_files = [
-        'bairros_poa.geojson',
+        'data/bairros_poa.geojson',
     ]
     
     optional_files = [
-        'assaltos_porto_alegre.csv',
-        'bairros_stats.json'
+        'config.json',
+        'relatorio_indicadores_criminais.json'
     ]
     
     # Verificar arquivos obrigatórios
@@ -81,13 +81,13 @@ def check_data_files():
     
     # Verificar se há dados coletados
     import glob
-    data_files = glob.glob('dados_criminalidade_poa_*.csv')
+    data_files = glob.glob('data/dados_criminalidade_poa_*.csv')
     if data_files:
         latest_file = max(data_files, key=os.path.getctime)
         print(f"✅ Dados coletados encontrados: {latest_file}")
     else:
         print("⚠️ Nenhum dado coletado encontrado")
-        print("💡 Execute: python data_collector.py")
+        print("💡 Execute: python scripts/data_collector_unified.py")
     
     return True
 

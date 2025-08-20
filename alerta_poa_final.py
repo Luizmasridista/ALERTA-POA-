@@ -28,130 +28,155 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# CSS customizado para layout responsivo
+# CSS customizado para layout responsivo e melhor UX
 st.markdown("""
 <style>
+/* Reset e base */
+.main .block-container {
+    max-width: 1200px;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* Cards de métricas */
 .metric-card {
-    background-color: #f0f2f6;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    border-left: 4px solid #ff4b4b;
-}
-
-.tips-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1rem;
-    margin: 1rem 0;
-}
-
-.tip-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 12px;
+    background-color: #ffffff;
     padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: box-shadow 0.2s ease;
+}
+
+.metric-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Melhorias gerais de UI */
+.stMetric {
+    background-color: #ffffff;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* Headers e títulos */
+h1, h2, h3 {
+    color: #212529;
+    font-weight: 600;
+}
+
+h1 {
+    border-bottom: 3px solid #0d6efd;
+    padding-bottom: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+h2 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #495057;
+}
+
+/* Sidebar improvements */
+.css-1d391kg {
+    background-color: #f8f9fa;
+}
+
+.css-1d391kg .css-1v0mbdj {
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+/* Botões e elementos interativos */
+.stButton > button {
+    border-radius: 6px;
+    border: 1px solid #0d6efd;
+    background-color: #0d6efd;
     color: white;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
 }
 
-.tip-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+.stButton > button:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+    transform: translateY(-1px);
 }
 
-.tip-card.critical {
-    background: linear-gradient(135deg, #ff416c 0%, #ff4757 100%);
+/* Expanders */
+.streamlit-expanderHeader {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    font-weight: 500;
 }
 
-.tip-card.high {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
-.tip-card.medium {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-}
-
-.tip-card.low {
-    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-}
-
-.tip-header {
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.tip-content {
-    font-size: 0.95rem;
-    line-height: 1.4;
-    opacity: 0.95;
-}
-
-.tip-priority {
-    display: inline-block;
-    background: rgba(255,255,255,0.2);
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    margin-top: 0.5rem;
-}
-
-@media (max-width: 1200px) {
-    .tips-container {
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    }
-}
-
+/* Responsividade */
 @media (max-width: 768px) {
-    .tips-container {
-        grid-template-columns: 1fr;
-        gap: 0.75rem;
-    }
-    
-    .tip-card {
+    .main .block-container {
         padding: 1rem;
-        margin: 0 0.5rem;
     }
     
-    .tip-header {
-        font-size: 1.1rem;
+    .metric-card {
+        padding: 1rem;
     }
     
-    .tip-content {
-        font-size: 0.9rem;
+    h1 {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    h2 {
+        font-size: 1.25rem;
+        margin-top: 1.5rem;
     }
 }
 
 @media (max-width: 480px) {
-    .tips-container {
-        margin: 0.5rem 0;
+    .main .block-container {
+        padding: 0.5rem;
     }
     
-    .tip-card {
-        padding: 0.75rem;
-        margin: 0 0.25rem;
+    h1 {
+        font-size: 1.25rem;
+        text-align: center;
+    }
+}
+
+/* Acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Alto contraste */
+@media (prefers-contrast: high) {
+    .metric-card {
+        border: 2px solid #000000;
     }
     
-    .tip-header {
-        font-size: 1rem;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
+    .stMetric {
+        border: 2px solid #000000;
+    }
+}
+
+/* Modo escuro */
+@media (prefers-color-scheme: dark) {
+    .metric-card {
+        background-color: #2d3748;
+        border-color: #4a5568;
+        color: #e2e8f0;
     }
     
-    .tip-content {
-        font-size: 0.85rem;
-        line-height: 1.3;
-    }
-    
-    .tip-priority {
-        font-size: 0.75rem;
-        padding: 0.2rem 0.5rem;
+    .stMetric {
+        background-color: #2d3748;
+        border-color: #4a5568;
+        color: #e2e8f0;
     }
 }
 </style>
@@ -226,7 +251,7 @@ def main():
     # Gerar alertas
     alerts = security_analysis.generate_alerts(filtered_df, threshold_crimes=10, threshold_increase=0.3)
     
-    # Seção de dicas úteis com layout responsivo
+    # Seção de dicas úteis com layout melhorado
     st.subheader("💡 Dicas Úteis de Segurança")
     
     # Função para gerar dicas baseadas nos dados atuais
