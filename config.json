@@ -1,0 +1,111 @@
+{
+  "sistema": {
+    "nome": "Alerta POA",
+    "versao": "2.0.0",
+    "descricao": "Sistema Avançado de Segurança Pública para Porto Alegre"
+  },
+  "coleta_dados": {
+    "fontes": {
+      "ssp_rs": {
+        "ativo": true,
+        "url_base": "https://ssp.rs.gov.br",
+        "descricao": "Secretaria de Segurança Pública do RS"
+      },
+      "data_poa": {
+        "ativo": true,
+        "url_base": "http://datapoa.com.br",
+        "descricao": "Portal de Dados Abertos de Porto Alegre"
+      },
+      "observatorio_rs": {
+        "ativo": true,
+        "url_base": "https://ssp.rs.gov.br/observatorio",
+        "descricao": "Observatório Estadual da Segurança Pública"
+      }
+    },
+    "atualizacao": {
+      "frequencia_dias": 7,
+      "horario_atualizacao": "02:00",
+      "backup_automatico": true,
+      "max_arquivos_backup": 10
+    }
+  },
+  "tipos_crime": {
+    "roubo_pedestres": {
+      "nome": "Roubo a Pedestres",
+      "cor": "#ff4444",
+      "prioridade": "alta"
+    },
+    "roubo_veiculos": {
+      "nome": "Roubo de Veículos",
+      "cor": "#ff6666",
+      "prioridade": "alta"
+    },
+    "furto_celulares": {
+      "nome": "Furto de Celulares",
+      "cor": "#ff8888",
+      "prioridade": "media"
+    },
+    "roubo_estabelecimentos": {
+      "nome": "Roubo a Estabelecimentos",
+      "cor": "#ffaaaa",
+      "prioridade": "alta"
+    },
+    "roubo_transporte": {
+      "nome": "Roubo em Transporte Público",
+      "cor": "#ffcccc",
+      "prioridade": "media"
+    },
+    "homicidios": {
+      "nome": "Homicídios",
+      "cor": "#cc0000",
+      "prioridade": "critica"
+    },
+    "latrocinios": {
+      "nome": "Latrocínios",
+      "cor": "#990000",
+      "prioridade": "critica"
+    }
+  },
+  "alertas": {
+    "niveis_risco": {
+      "baixo": {
+        "limite_inferior": 0,
+        "limite_superior": 30,
+        "cor": "#4caf50",
+        "icone": "🟢"
+      },
+      "medio": {
+        "limite_inferior": 31,
+        "limite_superior": 70,
+        "cor": "#ff9800",
+        "icone": "🟡"
+      },
+      "alto": {
+        "limite_inferior": 71,
+        "limite_superior": 100,
+        "cor": "#f44336",
+        "icone": "🔴"
+      }
+    }
+  },
+  "mapa": {
+    "centro_poa": {
+      "latitude": -30.0346,
+      "longitude": -51.2087
+    },
+    "zoom_inicial": 11,
+    "estilo_mapa": "OpenStreetMap"
+  },
+  "performance": {
+    "cache_dados": true,
+    "tempo_cache_minutos": 30,
+    "max_registros_visualizacao": 50000,
+    "compressao_dados": true
+  },
+  "logs": {
+    "nivel": "INFO",
+    "arquivo_log": "alerta_poa.log",
+    "rotacao_logs": true,
+    "max_tamanho_mb": 10
+  }
+}

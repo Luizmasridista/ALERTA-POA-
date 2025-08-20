@@ -1,0 +1,466 @@
+{
+  "data_geracao": "2025-08-20T14:42:31.563771",
+  "total_bairros_sem_dados": 63,
+  "metodologia": {
+    "fonte_dados_oficiais": "SSP-RS - Secretaria de Segurança Pública do RS",
+    "limitacoes": "Dados oficiais não possuem divisão por bairros, apenas por cidade e tipos de crime",
+    "fontes_alternativas": [
+      "Projeto Raio-X da Violência (Zero Hora)",
+      "Plataforma \"Onde fui roubado\"",
+      "Estudos da empresa Urbanis (georreferenciamento)"
+    ]
+  },
+  "analise_bairros": [
+    {
+      "nome": "ABERTA DOS MORROS",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "AGRONOMIA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "ARQUIPÉLAGO",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "AZENHA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "BELA VISTA",
+      "status_seguranca": "Seguro",
+      "indicadores_encontrados": "Baixo índice de criminalidade, boa estrutura de segurança",
+      "fonte_informacao": "Singular Digital",
+      "observacao": "Bairro identificado como seguro em estudos especializados"
+    },
+    {
+      "nome": "BELÉM NOVO",
+      "status_seguranca": "Seguro",
+      "indicadores_encontrados": "Baixos índices de criminalidade, zona sul tranquila",
+      "fonte_informacao": "Singular Digital, estatísticas de criminalidade",
+      "observacao": "Bairro identificado como seguro em estudos especializados"
+    },
+    {
+      "nome": "BELÉM VELHO",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "BOA VISTA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "BOA VISTA DO SUL",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "BOM JESUS",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "CAMPO NOVO",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "CASCATA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "CEL. APARICIO BORGES",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "CHAPÉU DO SOL",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "COSTA E SILVA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "CRISTO REDENTOR",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "ESPÍRITO SANTO",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "EXTREMA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "FARRAPOS",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "FLORESTA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "GLÓRIA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "GUARUJÁ",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "INDEPENDÊNCIA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "JARDIM BOTÂNICO",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "JARDIM DO SALSO",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "JARDIM EUROPA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "JARDIM FLORESTA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "JARDIM ISABEL",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "JARDIM ITU",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "JARDIM LEOPOLDINA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "JARDIM LINDÓIA",
+      "status_seguranca": "Seguro",
+      "indicadores_encontrados": "Residencial tranquilo, policiamento regular, infraestrutura segura",
+      "fonte_informacao": "Singular Digital",
+      "observacao": "Bairro identificado como seguro em estudos especializados"
+    },
+    {
+      "nome": "JARDIM SABARÁ",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "JARDIM SÃO PEDRO",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "LAGEADO",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "LAMI",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "MEDIANEIRA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "MONTSERRAT",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "MORRO SANTANA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "PARQUE SANTA FÉ",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "PASSO DA AREIA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "PASSO DAS PEDRAS",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "PEDRA REDONDA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "PITINGA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "PONTA GROSSA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "PRAIA DE BELAS",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "RIO BRANCO",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "SANTA CECÍLIA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "SANTA MARIA GORETTI",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "SANTA ROSA DE LIMA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "SANTA TEREZA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "SANTO ANTÔNIO",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "SÃO CAETANO",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "SÃO GERALDO",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "SÃO JOÃO",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "SÃO SEBASTIÃO",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "SÉTIMO CÉU",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "TERESÓPOLIS",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "TRISTEZA",
+      "status_seguranca": "Seguro",
+      "indicadores_encontrados": "Comunidade ativa, boa iluminação pública, tranquilidade",
+      "fonte_informacao": "Singular Digital",
+      "observacao": "Bairro identificado como seguro em estudos especializados"
+    },
+    {
+      "nome": "VILA  ASSUNÇÃO",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "VILA CONCEIÇÃO",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "VILA IPIRANGA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "VILA JOÃO PESSOA",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    },
+    {
+      "nome": "VILA SÃO JOSÉ",
+      "status_seguranca": "Indeterminado",
+      "indicadores_encontrados": "Ausência de registros pode indicar baixa criminalidade ou subnotificação",
+      "fonte_informacao": "Análise inferencial",
+      "observacao": "Necessária investigação adicional para confirmar status de segurança"
+    }
+  ],
+  "indicadores_gerais": {
+    "bairros_com_indicadores_positivos": 4,
+    "bairros_sem_informacoes": 59,
+    "observacoes": [
+      "A ausência de dados criminais pode indicar tanto baixa criminalidade quanto subnotificação",
+      "Bairros residenciais e periféricos tendem a ter menos registros oficiais",
+      "Recomenda-se análise complementar com dados de policiamento comunitário",
+      "Alguns bairros podem ser novos ou ter baixa densidade populacional"
+    ]
+  }
+}
