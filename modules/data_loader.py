@@ -26,8 +26,8 @@ def load_data():
         pd.DataFrame: DataFrame com dados de criminalidade processados
     """
     try:
-        # Tentar carregar dados integrados primeiro
-        arquivos_integrados = glob.glob('dados_criminalidade_operacoes_integrado_*.csv')
+        # Tentar carregar dados integrados primeiro no diretório data
+        arquivos_integrados = glob.glob('data/dados_criminalidade_operacoes_integrado_*.csv')
         
         if arquivos_integrados:
             # Usar o arquivo mais recente
@@ -35,12 +35,14 @@ def load_data():
             df = pd.read_csv(arquivo_mais_recente)
         else:
             # Fallback para dados originais
-            csv_file = 'dados_criminalidade_poa_atualizado_20250820_133519.csv'
+            csv_files = glob.glob('data/dados_criminalidade_poa_atualizado_*.csv')
             
-            if not os.path.exists(csv_file):
-                st.error(f"❌ Arquivo {csv_file} não encontrado.")
+            if not csv_files:
+                st.error("❌ Nenhum arquivo de dados encontrado no diretório data/")
                 return pd.DataFrame()
             
+            # Usar o arquivo mais recente
+            csv_file = max(csv_files)
             df = pd.read_csv(csv_file)
         
         # Padronizar nomes das colunas para compatibilidade
@@ -84,8 +86,8 @@ def load_security_index_data():
         pd.DataFrame: DataFrame com dados de índice de segurança
     """
     try:
-        # Procurar pelo arquivo mais recente de índice de segurança
-        arquivos_seguranca = glob.glob('indice_seguranca_bairros_*.csv')
+        # Procurar pelo arquivo mais recente de índice de segurança no diretório data
+        arquivos_seguranca = glob.glob('data/indice_seguranca_bairros_*.csv')
         
         if arquivos_seguranca:
             # Usar o arquivo mais recente
@@ -199,7 +201,7 @@ def load_geojson_data():
     Returns:
         dict or None: Dados GeoJSON ou None se não encontrado
     """
-    geojson_path = 'bairros_poa.geojson'
+    geojson_path = 'data/bairros_poa.geojson'
     if os.path.exists(geojson_path):
         with open(geojson_path, 'r', encoding='utf-8') as f:
             return json.load(f)

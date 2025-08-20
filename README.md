@@ -23,9 +23,33 @@ O **Alerta POA** é um sistema completo de análise de dados de segurança públ
 
 ## 🏗️ Arquitetura do Sistema
 
+### 📁 Estrutura do Projeto
+
+```
+alerta-poa/
+├── alerta_poa_final.py          # Aplicação principal
+├── start_system.py              # Script de inicialização
+├── config.json                  # Configurações do sistema
+├── requirements.txt             # Dependências Python
+├── data/                        # Diretório de dados
+│   ├── *.csv                   # Dados de criminalidade
+│   ├── *.json                  # Relatórios e metadados
+│   └── bairros_poa.geojson     # Dados geográficos
+├── modules/                     # Módulos do sistema
+│   ├── data_loader.py          # Carregamento de dados
+│   ├── security_analysis.py    # Análise de segurança
+│   ├── mapping_utils.py        # Utilitários de mapeamento
+│   ├── visualization.py        # Visualizações
+│   └── ui_components.py        # Componentes de interface
+└── scripts/                     # Scripts utilitários
+    ├── data_collector_unified.py  # Coletor unificado
+    └── *.py                       # Scripts antigos (legacy)
+```
+
 ### Componentes Principais
 
-1. **Coleta de Dados Automatizada**
+1. **Coleta de Dados Unificada**
+   - **Coletor Unificado**: Sistema consolidado para todas as fontes
    - **SSP-RS**: Secretaria de Segurança Pública do Rio Grande do Sul
    - **Observatório de Segurança**: Dados históricos desde 2002
    - **DataPOA**: Portal de dados abertos de Porto Alegre
@@ -92,12 +116,21 @@ cd alerta-poa
 
 2. **Instale as dependências**:
 ```bash
+pip install -r requirements.txt
+# ou
 python start_system.py install
 ```
 
-3. **Colete os dados iniciais**:
+3. **Execute a aplicação**:
 ```bash
-python start_system.py collect
+streamlit run alerta_poa_final.py
+# ou
+python start_system.py run
+```
+
+4. **Colete dados atualizados** (opcional):
+```bash
+python scripts/data_collector_unified.py
 ```
 
 4. **Execute o sistema**:
