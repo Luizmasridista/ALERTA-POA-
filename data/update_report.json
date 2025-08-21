@@ -1,0 +1,27 @@
+{
+  "data_atualizacao": "2025-08-21T02:08:25.976991",
+  "registros_anteriores": 7014,
+  "registros_atualizados": 5992,
+  "novos_registros": -1022,
+  "periodo_anterior": {
+    "inicio": "2024-01-01",
+    "fim": "2025-08-21"
+  },
+  "periodo_atualizado": {
+    "inicio": "2024-01-01",
+    "fim": "2025-08-21"
+  },
+  "fontes_atualizacao": [
+    "SSP-RS (Secretaria da Segurança Pública do RS)",
+    "GZH - Dados do primeiro semestre 2024",
+    "Observatório Estadual da Segurança Pública (Oesp)",
+    "Anuário Brasileiro de Segurança Pública 2025"
+  ],
+  "principais_atualizacoes": [
+    "Centro Histórico: 2.266 ocorrências no 1º semestre 2024",
+    "Redução de 26% nos furtos do Centro Histórico vs 2023",
+    "Redução de 49% nos roubos de veículos em Porto Alegre",
+    "Redução de 44% nos roubos a pedestres em Porto Alegre",
+    "Redução de 35% nos homicídios em Porto Alegre (172 casos em 2024)"
+  ]
+}

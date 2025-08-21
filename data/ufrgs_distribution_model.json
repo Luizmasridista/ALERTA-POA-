@@ -1,0 +1,125 @@
+{
+  "metadata": {
+    "source": "Pesquisa UFRGS 2016-2017",
+    "created_at": "2025-08-21T00:37:06.214297",
+    "description": "Modelo de distribuição de crimes por bairros baseado em pesquisa acadêmica",
+    "neighborhoods_count": 6,
+    "crime_types": [
+      "Homicídio",
+      "Roubo",
+      "Roubo de veículo",
+      "Furto",
+      "Lesão corporal"
+    ]
+  },
+  "model": {
+    "Centro Histórico": {
+      "zone": "Centro",
+      "population_factor": 0.26143790849673204,
+      "crime_weights": {
+        "Homicídio": 0.3,
+        "Roubo": 0.8,
+        "Roubo de veículo": 0.8,
+        "Furto": 0.9,
+        "Lesão corporal": 0.7
+      },
+      "final_weights": {
+        "Homicídio": 0.0784313725490196,
+        "Roubo": 0.20915032679738566,
+        "Roubo de veículo": 0.20915032679738566,
+        "Furto": 0.23529411764705885,
+        "Lesão corporal": 0.1830065359477124
+      }
+    },
+    "Cidade Baixa": {
+      "zone": "Centro",
+      "population_factor": 0.0784313725490196,
+      "crime_weights": {
+        "Homicídio": 0.3,
+        "Roubo": 0.8,
+        "Roubo de veículo": 0.8,
+        "Furto": 0.9,
+        "Lesão corporal": 0.7
+      },
+      "final_weights": {
+        "Homicídio": 0.023529411764705882,
+        "Roubo": 0.06274509803921569,
+        "Roubo de veículo": 0.06274509803921569,
+        "Furto": 0.07058823529411765,
+        "Lesão corporal": 0.05490196078431372
+      }
+    },
+    "Menino Deus": {
+      "zone": "Centro",
+      "population_factor": 0.22875816993464052,
+      "crime_weights": {
+        "Homicídio": 0.3,
+        "Roubo": 0.8,
+        "Roubo de veículo": 0.8,
+        "Furto": 0.9,
+        "Lesão corporal": 0.7
+      },
+      "final_weights": {
+        "Homicídio": 0.06862745098039215,
+        "Roubo": 0.18300653594771243,
+        "Roubo de veículo": 0.18300653594771243,
+        "Furto": 0.20588235294117646,
+        "Lesão corporal": 0.16013071895424835
+      }
+    },
+    "Floresta": {
+      "zone": "Norte",
+      "population_factor": 0.08496732026143791,
+      "crime_weights": {
+        "Homicídio": 0.7,
+        "Roubo": 0.6,
+        "Roubo de veículo": 0.6,
+        "Furto": 0.5,
+        "Lesão corporal": 0.6
+      },
+      "final_weights": {
+        "Homicídio": 0.05947712418300653,
+        "Roubo": 0.050980392156862744,
+        "Roubo de veículo": 0.050980392156862744,
+        "Furto": 0.042483660130718956,
+        "Lesão corporal": 0.050980392156862744
+      }
+    },
+    "Santana": {
+      "zone": "Norte",
+      "population_factor": 0.29411764705882354,
+      "crime_weights": {
+        "Homicídio": 0.7,
+        "Roubo": 0.6,
+        "Roubo de veículo": 0.6,
+        "Furto": 0.5,
+        "Lesão corporal": 0.6
+      },
+      "final_weights": {
+        "Homicídio": 0.20588235294117646,
+        "Roubo": 0.17647058823529413,
+        "Roubo de veículo": 0.17647058823529413,
+        "Furto": 0.14705882352941177,
+        "Lesão corporal": 0.17647058823529413
+      }
+    },
+    "Azenha": {
+      "zone": "Centro",
+      "population_factor": 0.05228758169934641,
+      "crime_weights": {
+        "Homicídio": 0.3,
+        "Roubo": 0.8,
+        "Roubo de veículo": 0.8,
+        "Furto": 0.9,
+        "Lesão corporal": 0.7
+      },
+      "final_weights": {
+        "Homicídio": 0.01568627450980392,
+        "Roubo": 0.04183006535947713,
+        "Roubo de veículo": 0.04183006535947713,
+        "Furto": 0.047058823529411764,
+        "Lesão corporal": 0.036601307189542485
+      }
+    }
+  }
+}
