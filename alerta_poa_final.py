@@ -8,6 +8,7 @@ from streamlit_folium import st_folium
 import json
 import numpy as np
 import os
+import time
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import LabelEncoder
 import warnings
@@ -19,6 +20,7 @@ from modules import security_analysis
 from modules import mapping_utils
 from modules import visualization
 from modules import ui_components
+from modules.security_analysis import calculate_synergistic_security_analysis
 
 # Configuração da página
 st.set_page_config(
@@ -220,51 +222,60 @@ iframe[title="streamlit_folium.st_folium"] {
 # Todas as funções de visualização foram movidas para modules/visualization.py
 
 def main():
-    # Teste básico para verificar se a função main está sendo executada
+    """Função principal do sistema Alerta POA com melhorias completas."""
     st.title("🚨 Alerta POA - Sistema Integrado de Segurança")
-    st.write("✅ Sistema iniciado com sucesso!")
-    st.write("📊 Esta é uma versão de teste para identificar problemas.")
+    st.markdown("**Sistema Aprimorado com Análise Sinérgica Completa e Tooltips Inteligentes**")
     
-    # Teste simples de métricas
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("Teste 1", "100")
-    with col2:
-        st.metric("Teste 2", "200")
-    with col3:
-        st.metric("Teste 3", "300")
+    # Loading otimizado com feedback visual melhorado
+    try:
+        # Carregar dados com progresso
+        progress_bar = st.progress(0)
+        status_text = st.empty()
+        
+        # Etapa 1: Dados de criminalidade
+        status_text.text("📁 Carregando dados de criminalidade...")
+        progress_bar.progress(0.2)
+        df = data_loader.load_data()
+        if df.empty:
+            st.error("❌ Nenhum dado de criminalidade encontrado!")
+            return
+        
+        # Etapa 2: Estatísticas dos bairros
+        status_text.text("🏢 Processando estatísticas dos bairros...")
+        progress_bar.progress(0.5)
+        bairros_stats = data_loader.load_neighborhood_stats()
+        
+        # Etapa 3: Dados de segurança
+        status_text.text("🔍 Carregando dados de operações policiais...")
+        progress_bar.progress(0.8)
+        df_seguranca = data_loader.load_security_index_data()
+        
+        # Finalizar loading
+        status_text.text("✅ Dados carregados com sucesso!")
+        progress_bar.progress(1.0)
+        
+        time.sleep(0.5)  # Breve pausa para feedback visual
+        progress_bar.empty()
+        status_text.empty()
+        
+        # Renderizar status do sistema
+        st.subheader("📈 Status do Sistema")
+        ui_components.render_system_status(df, df_seguranca)
+        
+        st.success(f"✅ Sistema inicializado - {len(df):,} crimes | {len(bairros_stats)} bairros | {len(df_seguranca):,} operações")
     
-    st.success("🎉 Se você está vendo esta mensagem, o sistema está funcionando!")
+    except Exception as e:
+        st.error(f"❌ Erro crítico na inicialização: {str(e)}")
+        import traceback
+        st.code(traceback.format_exc())
+        return
     
-    # Comentar temporariamente o carregamento de dados
-    # try:
-    #     # Carregar dados integrados usando os módulos
-    #     with st.spinner("Carregando dados de criminalidade..."):
-    #         df = data_loader.load_data()
-    #         st.write(f"✅ Dados de criminalidade carregados: {len(df)} registros")
-    #     
-    #     with st.spinner("Carregando estatísticas dos bairros..."):
-    #         bairros_stats = data_loader.load_neighborhood_stats()
-    #         st.write(f"✅ Estatísticas dos bairros carregadas: {len(bairros_stats)} bairros")
-    #     
-    #     with st.spinner("Carregando índice de segurança..."):
-    #         df_seguranca = data_loader.load_security_index_data()
-    #         st.write(f"✅ Dados de segurança carregados: {len(df_seguranca)} registros")
-    # 
-    # except Exception as e:
-    #     st.error(f"❌ Erro crítico na inicialização: {str(e)}")
-    #     import traceback
-    #     st.code(traceback.format_exc())
-    #     return
-    
-    return  # Retornar aqui para evitar executar o resto do código
-    
-    # Calcular risco atual integrado
+    # Calcular risco atual integrado usando análise sinérgica
     if not df.empty and bairros_stats:
         # Calcular score médio baseado nos bairros com mais crimes
         top_bairro = max(bairros_stats.items(), key=lambda x: x[1])[0] if bairros_stats else "Centro"
-        risk_data = security_analysis.calculate_risk_score(df, top_bairro)
-        risk_score = risk_data['score_risco']
+        risk_data = security_analysis.calculate_synergistic_security_analysis(df, df_seguranca, top_bairro)
+        risk_score = risk_data['score_sinergico']
     else:
         risk_score = 0
     
@@ -330,33 +341,55 @@ def main():
     with col1:
         st.subheader("🗺️ Mapa de Risco Interativo")
         
-        # Criar mapa otimizado (sem cache devido a problemas de serialização)
-        # O cache é aplicado internamente nos dados, não no objeto mapa
-        advanced_map = visualization.create_advanced_map(filtered_df, df_seguranca)
+        # Criar mapa com análise sinérgica completa e loading otimizado
+        with st.spinner("🎨 Gerando mapa interativo com dados completos..."):
+            # Usar nova função de criação de mapa otimizada
+            advanced_map = visualization.create_risk_map(filtered_df, df_seguranca)
         
-        # Configurações otimizadas do st_folium para evitar carregamento contínuo
+        # Configurações OTIMIZADAS do st_folium para ELIMINAR problemas de loading
         map_data = st_folium(
             advanced_map, 
-            width=700, 
-            height=500,
-            returned_objects=["last_object_clicked"],  # Limitar objetos retornados
-            feature_group_to_add=None,  # Não adicionar grupos de features dinamicamente
-            use_container_width=False,  # Usar largura fixa
-            key="risk_map"  # Chave única para evitar re-renderizações
+            width=750, 
+            height=550,
+            returned_objects=["last_clicked"],  # Apenas cliques, menos overhead
+            feature_group_to_add=None,  # Não adicionar grupos dinamicamente
+            use_container_width=True,  # Responsivo
+            key="alerta_poa_map_v2",  # Nova chave para forçar atualização
+            zoom=11,  # Zoom inicial fixo
+            center=[-30.0346, -51.2177],  # Centro fixo em Porto Alegre
+            debug=False  # Desabilitar debug para performance
         )
     
     with col2:
-        st.subheader("📊 Métricas em Tempo Real")
+        st.subheader("📊 Métricas Integradas em Tempo Real")
         
-        # Métricas principais
-        st.metric("🎯 Risco Atual", f"{risk_score:.1f}%")
-        st.metric("📍 Total de Assaltos", len(filtered_df))
+        # Métricas principais aprimoradas
+        total_crimes = len(filtered_df)
+        total_operacoes = filtered_df['policiais_envolvidos'].sum() if 'policiais_envolvidos' in filtered_df.columns else 0
+        total_prisoes = filtered_df['prisoes_realizadas'].sum() if 'prisoes_realizadas' in filtered_df.columns else 0
+        total_armas = filtered_df['apreensoes_armas'].sum() if 'apreensoes_armas' in filtered_df.columns else 0
         
+        # Grid de métricas
+        col_met1, col_met2 = st.columns(2)
+        
+        with col_met1:
+            st.metric("🎯 Risco Atual", f"{risk_score:.1f}", help="Score de risco integrado baseado em crimes, operações e efetividade")
+            st.metric("📍 Total de Crimes", f"{total_crimes:,}", help="Total de crimes registrados no período")
+        
+        with col_met2:
+            st.metric("👮 Policiais Envolvidos", f"{int(total_operacoes):,}", help="Total de policiais em operações")
+            st.metric("🔒 Prisões Realizadas", f"{int(total_prisoes):,}", help="Total de prisões efetivadas")
+        
+        # Métricas adicionais
+        if total_armas > 0:
+            st.metric("🔫 Armas Apreendidas", f"{int(total_armas):,}", help="Total de armas apreendidas")
+        
+        # Tipo de crime mais comum
         if not filtered_df.empty:
             try:
                 if 'tipo_crime' in filtered_df.columns and len(filtered_df['tipo_crime'].dropna()) > 0:
                     most_common = filtered_df['tipo_crime'].mode()[0].replace('_', ' ').title()
-                    st.metric("🔝 Tipo Mais Comum", most_common)
+                    st.metric("🔝 Tipo Mais Comum", most_common, help="Tipo de crime com maior incidência")
                 else:
                     st.metric("🔝 Tipo Mais Comum", "N/A")
             except (IndexError, ValueError):

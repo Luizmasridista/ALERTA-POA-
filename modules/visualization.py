@@ -47,14 +47,14 @@ class RiskMapGenerator:
     
     def _calculate_neighborhood_stats(self, df_crimes: pd.DataFrame, 
                                     df_operacoes: Optional[pd.DataFrame] = None) -> Dict[str, Dict[str, Any]]:
-        """Calcula estatísticas por bairro.
+        """Calcula estatísticas COMPLETAS por bairro usando análise sinérgica.
         
         Args:
-            df_crimes: DataFrame com dados de crimes
-            df_operacoes: DataFrame com dados de operações policiais
+            df_crimes: DataFrame com dados de crimes integrados
+            df_operacoes: DataFrame com dados de operações policiais (legacy)
             
         Returns:
-            Dict com estatísticas por bairro
+            Dict com estatísticas completas por bairro
         """
         stats = {}
         
@@ -62,37 +62,60 @@ class RiskMapGenerator:
             return stats
         
         # Agrupar crimes por bairro
-        crimes_por_bairro = df_crimes.groupby('bairro').size().to_dict()
+        bairros_unicos = df_crimes['bairro'].unique()
         
-        for bairro, total_crimes in crimes_por_bairro.items():
+        for bairro in bairros_unicos:
+            if pd.isna(bairro) or bairro.strip() == '':
+                continue
+                
             bairro_normalizado = bairro.upper().strip()
             
-            # Calcular operações e mortes
-            total_operacoes = 0
-            mortes_confronto = 0
-            
-            if df_operacoes is not None and not df_operacoes.empty:
-                operacoes_bairro = df_operacoes[
-                    df_operacoes['bairro'].str.upper().str.strip() == bairro_normalizado
-                ]
-                total_operacoes = len(operacoes_bairro)
+            # Usar análise sinérgica completa da nova função
+            try:
+                analise_completa = calculate_synergistic_security_analysis(
+                    df_crimes, df_operacoes, bairro
+                )
                 
-                if 'mortes_intervencao_policial' in operacoes_bairro.columns:
-                    mortes_confronto = operacoes_bairro['mortes_intervencao_policial'].sum()
-            
-            # Calcular nível de risco e cor
-            nivel_risco = self._calculate_risk_level(total_crimes, total_operacoes, mortes_confronto)
-            cor = self._calculate_risk_color(total_crimes, total_operacoes, mortes_confronto)
-            
-            stats[bairro_normalizado] = {
-                'nome_original': bairro,
-                'total_crimes': total_crimes,
-                'total_operacoes': total_operacoes,
-                'mortes_confronto': mortes_confronto,
-                'nivel_risco': nivel_risco,
-                'cor': cor,
-                'score_risco': self._calculate_risk_score(total_crimes, total_operacoes, mortes_confronto)
-            }
+                # Extrair dados da análise sinérgica
+                stats[bairro_normalizado] = {
+                    'nome_original': bairro,
+                    'total_crimes': analise_completa['total_crimes'],
+                    'total_operacoes': analise_completa['total_operacoes'],
+                    'mortes_confronto': analise_completa['mortes_confronto'],
+                    'prisoes_realizadas': analise_completa['prisoes_realizadas'],
+                    'apreensoes_armas': analise_completa['apreensoes_armas'],
+                    'apreensoes_drogas': analise_completa['apreensoes_drogas'],
+                    'operacoes_ativas': analise_completa['operacoes_ativas'],
+                    'efetividade_global': analise_completa['efetividade_global'],
+                    'nivel_risco': analise_completa['nivel_risco'],
+                    'cor': analise_completa['cor'],
+                    'score_risco': analise_completa['score_sinergico'],
+                    'recomendacoes': analise_completa['recomendacoes'],
+                    'popup_content': analise_completa['popup_content']
+                }
+                
+            except Exception as e:
+                # Fallback para cálculo básico em caso de erro
+                st.warning(f"Erro na análise sinérgica para {bairro}: {e}")
+                crimes_bairro = df_crimes[df_crimes['bairro'].str.upper().str.strip() == bairro_normalizado]
+                total_crimes = len(crimes_bairro)
+                
+                stats[bairro_normalizado] = {
+                    'nome_original': bairro,
+                    'total_crimes': total_crimes,
+                    'total_operacoes': 0,
+                    'mortes_confronto': 0,
+                    'prisoes_realizadas': 0,
+                    'apreensoes_armas': 0,
+                    'apreensoes_drogas': 0,
+                    'operacoes_ativas': 0,
+                    'efetividade_global': 0,
+                    'nivel_risco': self._calculate_risk_level(total_crimes, 0, 0),
+                    'cor': self._calculate_risk_color(total_crimes, 0, 0),
+                    'score_risco': self._calculate_risk_score(total_crimes, 0, 0),
+                    'recomendacoes': [],
+                    'popup_content': ''
+                }
         
         return stats
     
@@ -182,81 +205,130 @@ class RiskMapGenerator:
             return '#90EE90'  # Verde claro - Muito Baixo
     
     def _create_tooltip(self, bairro_stats: Dict[str, Any]) -> str:
-        """Cria tooltip informativo para o bairro.
+        """Cria tooltip RICO E INFORMATIVO usando TODOS os dados disponíveis.
         
         Args:
-            bairro_stats: Estatísticas do bairro
+            bairro_stats: Estatísticas do bairro com todos os indicadores
             
         Returns:
-            Texto do tooltip
+            Tooltip HTML rico com todos os dados
         """
         nome = bairro_stats.get('NOME', bairro_stats.get('nome_original', 'Desconhecido'))
         crimes = bairro_stats['total_crimes']
         operacoes = bairro_stats['total_operacoes']
         mortes = bairro_stats['mortes_confronto']
-        nivel = bairro_stats['nivel_risco']
-        
-        tooltip = f"{nome}: {crimes} crimes"
-        
-        if operacoes > 0:
-            tooltip += f", {operacoes} operações"
-        
-        if mortes > 0:
-            tooltip += f", {mortes} mortes"
-        
-        tooltip += f" - {nivel}"
-        
-        return tooltip
-    
-    def _create_popup(self, bairro_stats: Dict[str, Any]) -> str:
-        """Cria popup detalhado para o bairro.
-        
-        Args:
-            bairro_stats: Estatísticas do bairro
-            
-        Returns:
-            HTML do popup
-        """
-        nome = bairro_stats.get('NOME', bairro_stats.get('nome_original', 'Desconhecido'))
-        crimes = bairro_stats['total_crimes']
-        operacoes = bairro_stats['total_operacoes']
-        mortes = bairro_stats['mortes_confronto']
+        prisoes = bairro_stats.get('prisoes_realizadas', 0)
+        armas = bairro_stats.get('apreensoes_armas', 0)
+        drogas = bairro_stats.get('apreensoes_drogas', 0)
+        ops_ativas = bairro_stats.get('operacoes_ativas', 0)
+        efetividade = bairro_stats.get('efetividade_global', 0)
         nivel = bairro_stats['nivel_risco']
         score = bairro_stats['score_risco']
         
-        # Determinar recomendações
-        recomendacoes = self._get_recommendations(score, operacoes, crimes)
+        # Criar indicadores visuais
+        indicadores = []
+        if mortes > 0:
+            indicadores.append(f"💀 {mortes}")
+        if prisoes > 0:
+            indicadores.append(f"🔒 {prisoes}")
+        if armas > 0:
+            indicadores.append(f"🔫 {armas}")
+        if drogas > 0:
+            indicadores.append(f"💊 {drogas:.1f}kg")
+        if ops_ativas > 0:
+            indicadores.append(f"🚨 {ops_ativas}")
+        
+        # Tooltip rico com dados estruturados
+        tooltip_parts = [
+            f"📍 <strong>{nome}</strong>",
+            f"📊 {crimes} crimes | 👮 {operacoes} policiais"
+        ]
+        
+        if indicadores:
+            tooltip_parts.append(" | ".join(indicadores))
+        
+        if efetividade > 0:
+            tooltip_parts.append(f"📈 Efetividade: {efetividade:.1f}%")
+        
+        tooltip_parts.extend([
+            f"⚠️ {nivel} (Score: {score:.1f})"
+        ])
+        
+        return "<br>".join(tooltip_parts)
+    
+    def _create_popup(self, bairro_stats: Dict[str, Any]) -> str:
+        """Cria popup ULTRA DETALHADO com TODOS os indicadores integrados.
+        
+        Args:
+            bairro_stats: Estatísticas completas do bairro com todos os indicadores
+            
+        Returns:
+            HTML do popup rico e informativo
+        """
+        nome = bairro_stats.get('NOME', bairro_stats.get('nome_original', 'Desconhecido'))
+        crimes = bairro_stats['total_crimes']
+        operacoes = bairro_stats['total_operacoes']
+        mortes = bairro_stats['mortes_confronto']
+        prisoes = bairro_stats.get('prisoes_realizadas', 0)
+        armas = bairro_stats.get('apreensoes_armas', 0)
+        drogas = bairro_stats.get('apreensoes_drogas', 0)
+        ops_ativas = bairro_stats.get('operacoes_ativas', 0)
+        efetividade = bairro_stats.get('efetividade_global', 0)
+        nivel = bairro_stats['nivel_risco']
+        score = bairro_stats['score_risco']
+        
+        # Usar recomendações da análise sinérgica se disponível
+        recomendacoes = bairro_stats.get('recomendacoes', self._get_recommendations(score, operacoes, crimes))
         
         popup_html = f"""
-        <div style="font-family: 'Segoe UI', Arial, sans-serif; width: 320px; padding: 5px;">
+        <div style="font-family: 'Segoe UI', Arial, sans-serif; width: 420px; padding: 8px;">
             <h4 style="color: #1f4e79; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 2px solid #e1e5e9; font-size: 16px;">
                 📍 {nome}
             </h4>
             
-            <div style="background: #f8f9fa; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
+            <!-- Seção de Crimes e Operações -->
+            <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+                <h5 style="color: #495057; margin: 0 0 8px 0; font-size: 14px;">📊 Estatísticas de Segurança</h5>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; font-size: 12px;">
                     <div><strong>📊 Crimes:</strong> {crimes}</div>
-                    <div><strong>👮 Operações:</strong> {operacoes}</div>
-                    <div><strong>💀 Mortes:</strong> {mortes}</div>
-                    <div><strong>📈 Score:</strong> {score:.1f}</div>
+                    <div><strong>👮 Policiais:</strong> {int(operacoes)}</div>
+                    <div><strong>🔒 Prisões:</strong> {int(prisoes)}</div>
+                    <div><strong>💀 Mortes:</strong> {int(mortes)}</div>
+                    <div><strong>🔫 Armas:</strong> {int(armas)}</div>
+                    <div><strong>💊 Drogas:</strong> {drogas:.1f}kg</div>
                 </div>
             </div>
             
-            <div style="margin-bottom: 12px;">
-                <strong style="color: #495057;">⚠️ Nível de Risco:</strong>
-                <span style="font-weight: bold; font-size: 14px;">{nivel}</span>
+            <!-- Seção de Operações Ativas -->
+            <div style="background: #e8f4fd; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
+                <h5 style="color: #0066cc; margin: 0 0 6px 0; font-size: 13px;">🚨 Operações & Efetividade</h5>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px;">
+                    <div><strong>Op. Ativas:</strong> {int(ops_ativas)}</div>
+                    <div><strong>Efetividade:</strong> {efetividade:.1f}%</div>
+                </div>
+            </div>
+            
+            <!-- Score e Nível de Risco -->
+            <div style="background: #f0f0f0; padding: 10px; border-radius: 6px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 14px; font-weight: bold; color: #495057;">⚠️ {nivel}</div>
+                        <div style="font-size: 12px; color: #666;">📈 Score de Risco: {score:.1f}</div>
+                    </div>
+                </div>
             </div>
         """
         
+        # Seção de Recomendações
         if recomendacoes:
             popup_html += """
-            <div style="background: #e8f4fd; padding: 8px; border-radius: 4px; border-left: 3px solid #0066cc;">
-                <strong style="color: #0066cc; font-size: 12px;">💡 Recomendações:</strong>
-                <ul style="margin: 4px 0 0 0; padding-left: 16px; font-size: 11px; color: #333;">
+            <div style="background: #e8f4fd; padding: 10px; border-radius: 6px; border-left: 3px solid #0066cc;">
+                <strong style="color: #0066cc; font-size: 13px;">💡 Recomendações Estratégicas:</strong>
+                <ul style="margin: 6px 0 0 0; padding-left: 18px; font-size: 11px; color: #333; line-height: 1.4;">
             """
             
-            for rec in recomendacoes[:3]:  # Máximo 3 recomendações
-                popup_html += f"<li style='margin-bottom: 2px;'>{rec}</li>"
+            for rec in recomendacoes[:4]:  # Máximo 4 recomendações  
+                popup_html += f"<li style='margin-bottom: 3px;'>{rec}</li>"
             
             popup_html += "</ul></div>"
         
@@ -371,51 +443,57 @@ class RiskMapGenerator:
     
     def create_risk_map(self, df_crimes: pd.DataFrame, 
                        df_operacoes: Optional[pd.DataFrame] = None) -> folium.Map:
-        """Cria mapa de análise de risco principal.
+        """Cria mapa de análise de risco com LOADING OTIMIZADO e dados COMPLETOS.
         
         Args:
-            df_crimes: DataFrame com dados de crimes
+            df_crimes: DataFrame com dados de crimes integrados
             df_operacoes: DataFrame com dados de operações policiais
             
         Returns:
-            Mapa Folium configurado
+            Mapa Folium otimizado e responsivo
         """
-        # Criar mapa base otimizado para performance
+        # Criar mapa base com configurações otimizadas para performance
         m = folium.Map(
             location=self.porto_alegre_coords,
             zoom_start=self.default_zoom,
             tiles='OpenStreetMap',
-            prefer_canvas=True,
+            prefer_canvas=True,  # Melhor performance
             control_scale=True,
             zoom_control=True,
             scrollWheelZoom=True,
             dragging=True,
             tap=False,  # Desabilitar tap para melhor performance
-            tap_tolerance=15,
+            tap_tolerance=10,  # Reduzir tolerância
             world_copy_jump=False,  # Evitar cópias do mundo
             close_popup_on_click=True,
             bounce_at_zoom_limits=True,
-            keyboard=False,  # Desabilitar controle por teclado
+            keyboard=False,  # Desabilitar controle por teclado para performance
             double_click_zoom=True,
-            box_zoom=True
+            box_zoom=False,  # Desabilitar box zoom para performance
+            max_bounds=None,  # Sem limites para navegação mais fluida
+            min_zoom=9,  # Zoom mínimo para evitar muito zoom out
+            max_zoom=18  # Zoom máximo para evitar muito zoom in
         )
         
-        # Calcular estatísticas por bairro
-        neighborhood_stats = self._calculate_neighborhood_stats(df_crimes, df_operacoes)
+        # OTIMIZAÇÃO: Usar progress bar para indicar progresso do carregamento
+        with st.spinner('🗺️ Processando dados de segurança...'):
+            neighborhood_stats = self._calculate_neighborhood_stats(df_crimes, df_operacoes)
         
         if not neighborhood_stats:
             st.warning("⚠️ Nenhum dado de criminalidade disponível para visualização.")
             return m
         
-        # Adicionar camadas GeoJSON se disponível
-        if self.geojson_data:
-            self._add_geojson_layer(m, neighborhood_stats)
-        else:
-            self._add_marker_layer(m, neighborhood_stats)
-        
-        # Adicionar legenda
-        legend_html = self._create_legend()
-        m.get_root().html.add_child(folium.Element(legend_html))
+        # Progress feedback para o usuário
+        with st.spinner(f'🎨 Renderizando mapa com {len(neighborhood_stats)} bairros...'):
+            # Adicionar camadas GeoJSON se disponível
+            if self.geojson_data:
+                self._add_geojson_layer(m, neighborhood_stats)
+            else:
+                self._add_marker_layer(m, neighborhood_stats)
+            
+            # Adicionar legenda otimizada
+            legend_html = self._create_legend()
+            m.get_root().html.add_child(folium.Element(legend_html))
         
         return m
     
@@ -463,25 +541,41 @@ class RiskMapGenerator:
                     'score_risco': 0
                 })
         
-        # Adicionar camada GeoJSON otimizada com menos re-renderizações
+        # Adicionar camada GeoJSON com TOOLTIPS RICOS e dados COMPLETOS
         geojson_layer = folium.GeoJson(
             self.geojson_data,
             style_function=self._style_function,
             highlight_function=self._highlight_function,
             popup=folium.GeoJsonPopup(
-                fields=['NOME', 'total_crimes', 'total_operacoes', 'nivel_risco'],
-                aliases=['Bairro:', 'Crimes:', 'Operações:', 'Nível de Risco:'],
+                fields=[
+                    'NOME', 'total_crimes', 'total_operacoes', 'prisoes_realizadas',
+                    'apreensoes_armas', 'apreensoes_drogas', 'efetividade_global', 
+                    'nivel_risco', 'score_risco'
+                ],
+                aliases=[
+                    'Bairro:', 'Crimes:', 'Policiais:', 'Prisões:',
+                    'Armas Apreendidas:', 'Drogas (kg):', 'Efetividade (%):', 
+                    'Nível de Risco:', 'Score:'
+                ],
                 localize=True,
                 sticky=True,
                 labels=True,
-                max_width=350
+                max_width=450,  # Aumentar largura para mais informações
+                style="background-color: white; border: 2px solid #333; border-radius: 8px; font-family: 'Segoe UI', Arial, sans-serif;"
             ),
             tooltip=folium.GeoJsonTooltip(
-                fields=['NOME', 'score_risco'],
-                aliases=['Bairro:', 'Score de Risco:'],
+                fields=[
+                    'NOME', 'total_crimes', 'prisoes_realizadas', 'apreensoes_armas',
+                    'efetividade_global', 'nivel_risco'
+                ],
+                aliases=[
+                    'Bairro:', 'Crimes:', 'Prisões:', 'Armas:',
+                    'Efetividade:', 'Risco:'
+                ],
                 localize=True,
                 sticky=True,
-                labels=True
+                labels=True,
+                style="background-color: rgba(255, 255, 255, 0.95); border: 1px solid #333; border-radius: 6px; font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; padding: 8px;"
             )
         )
         geojson_layer.add_to(m)

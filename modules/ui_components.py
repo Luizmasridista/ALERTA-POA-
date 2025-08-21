@@ -12,6 +12,72 @@ import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
 from datetime import datetime
+import time
+from typing import Optional, Dict, Any
+
+
+def render_loading_state(message: str, progress: Optional[float] = None, details: Optional[str] = None):
+    """Renderiza estado de loading melhorado com feedback visual.
+    
+    Args:
+        message: Mensagem principal do loading
+        progress: Valor de progresso (0-1) se conhecido
+        details: Detalhes adicionais opcionais
+    """
+    container = st.container()
+    
+    with container:
+        st.info(f"⏳ {message}")
+        
+        if progress is not None:
+            st.progress(progress)
+            st.caption(f"Progresso: {progress*100:.1f}%")
+        
+        if details:
+            st.caption(f"🔍 {details}")
+
+
+def render_system_status(df_crimes: pd.DataFrame, df_operacoes: Optional[pd.DataFrame] = None):
+    """Renderiza status geral do sistema com indicadores de saúde.
+    
+    Args:
+        df_crimes: DataFrame com dados de crimes
+        df_operacoes: DataFrame com dados de operações policiais
+    """
+    col1, col2, col3, col4 = st.columns(4)
+    
+    # Status dos dados
+    with col1:
+        if not df_crimes.empty:
+            st.success("✅ Dados OK")
+            st.caption(f"{len(df_crimes):,} registros")
+        else:
+            st.error("❌ Sem dados")
+    
+    # Status das operações
+    with col2:
+        if df_operacoes is not None and not df_operacoes.empty:
+            st.success("✅ Operações OK")
+            st.caption(f"{len(df_operacoes):,} operações")
+        else:
+            st.warning("⚠️ Operações limitadas")
+    
+    # Status da integração
+    with col3:
+        colunas_integracao = ['policiais_envolvidos', 'prisoes_realizadas', 'apreensoes_armas']
+        if all(col in df_crimes.columns for col in colunas_integracao):
+            st.success("✅ Dados integrados")
+        else:
+            st.warning("⚠️ Integração parcial")
+    
+    # Performance
+    with col4:
+        if len(df_crimes) > 1000:
+            st.success("✅ Dataset robusto")
+        elif len(df_crimes) > 100:
+            st.warning("⚠️ Dataset moderado")
+        else:
+            st.error("❌ Dataset pequeno")
 
 
 def render_tip_cards(all_tips):

@@ -178,7 +178,7 @@ def calculate_enhanced_risk_score_with_police_ops(df_crimes, df_operacoes, bairr
 
 
 def calculate_synergistic_security_analysis(df_crimes, df_operacoes, bairro):
-    """Realiza análise sinérgica detalhada de segurança.
+    """Realiza análise sinérgica detalhada de segurança usando TODOS os dados integrados.
     
     Args:
         df_crimes (pd.DataFrame): DataFrame com dados de crimes (dados integrados)
@@ -196,15 +196,25 @@ def calculate_synergistic_security_analysis(df_crimes, df_operacoes, bairro):
     
     total_crimes = len(crimes_bairro)
     
-    # Extrair dados de operações dos dados integrados
+    # Extrair TODOS os dados de operações dos dados integrados
     if not crimes_bairro.empty:
         total_operacoes = crimes_bairro['policiais_envolvidos'].sum() if 'policiais_envolvidos' in crimes_bairro.columns else 0
         mortes_confronto = crimes_bairro['mortes_intervencao_policial'].sum() if 'mortes_intervencao_policial' in crimes_bairro.columns else 0
         prisoes_realizadas = crimes_bairro['prisoes_realizadas'].sum() if 'prisoes_realizadas' in crimes_bairro.columns else 0
+        apreensoes_armas = crimes_bairro['apreensoes_armas'].sum() if 'apreensoes_armas' in crimes_bairro.columns else 0
+        apreensoes_drogas = crimes_bairro['apreensoes_drogas_kg'].sum() if 'apreensoes_drogas_kg' in crimes_bairro.columns else 0
+        
+        # Analisar tipos de operações
+        operacoes_tipos = crimes_bairro['tipo_operacao'].value_counts().to_dict() if 'tipo_operacao' in crimes_bairro.columns else {}
+        operacoes_ativas = len(crimes_bairro[crimes_bairro['tipo_operacao'] != 'Nenhuma']) if 'tipo_operacao' in crimes_bairro.columns else 0
     else:
         total_operacoes = 0
         mortes_confronto = 0
         prisoes_realizadas = 0
+        apreensoes_armas = 0
+        apreensoes_drogas = 0
+        operacoes_tipos = {}
+        operacoes_ativas = 0
     
     # Análise temporal
     analise_temporal = {
@@ -245,81 +255,157 @@ def calculate_synergistic_security_analysis(df_crimes, df_operacoes, bairro):
         if 'periodo_dia' in crimes_bairro.columns:
             padroes_crimes['periodos_criticos'] = crimes_bairro['periodo_dia'].value_counts().to_dict()
     
-    # Score sinérgico considerando mortes em confronto
+    # Score sinérgico COMPLETO considerando TODOS os indicadores
     score_base = total_crimes
     
-    # Penalidade por mortes em confronto (peso muito alto)
+    # Penalidades por indicadores negativos (com pesos ajustados)
+    penalidades = 0
+    
+    # Mortes em confronto - penálidade crítica
     if mortes_confronto > 0:
-        score_base += mortes_confronto * 50  # Cada morte vale 50 crimes
+        penalidades += mortes_confronto * 75  # Peso aumentado para refletir gravidade
     
-    # Fator de redução baseado em operações policiais efetivas
-    if total_operacoes > 0:
-        efetividade = min(0.4, total_operacoes / max(1, total_crimes))  # Max 40% de redução
+    # Fatores positivos (reduções no score de risco)
+    beneficios = 0
+    
+    # Prisões realizadas - indicador de efetividade policial
+    if prisoes_realizadas > 0:
+        beneficios += prisoes_realizadas * 3  # Cada prisão reduz o risco
+    
+    # Apreensões de armas - redução significativa do risco
+    if apreensoes_armas > 0:
+        beneficios += apreensoes_armas * 8  # Armas apreendidas reduzem muito o risco
+    
+    # Apreensões de drogas - indicador de combate ao tráfico
+    if apreensoes_drogas > 0:
+        beneficios += apreensoes_drogas * 5  # Por kg apreendido
+    
+    # Operações ativas - fator positivo
+    if operacoes_ativas > 0:
+        beneficios += operacoes_ativas * 2  # Operações ativas reduzem risco
+    
+    # Score final considerando todos os fatores
+    score_bruto = score_base + penalidades - beneficios
+    
+    # Fator de redução adicional baseado em operações policiais
+    fator_operacoes = 1.0
+    if total_operacoes > 0 and total_crimes > 0:
+        efetividade = min(0.5, total_operacoes / total_crimes)  # Max 50% de redução
         fator_operacoes = 1 - efetividade
-    else:
-        fator_operacoes = 1.0
     
-    score_ajustado = score_base * fator_operacoes
+    score_ajustado = max(0, score_bruto * fator_operacoes)  # Não permitir score negativo
     
     # Normalizar para escala apropriada
     score_final = score_ajustado
     
-    # Determinar nível de risco usando a mesma lógica do mapping_utils
-    if score_final >= 150:
+    # Calcular efetividade global das operações
+    efetividade_global = 0
+    if total_crimes > 0:
+        taxa_prisao = prisoes_realizadas / total_crimes
+        taxa_apreensao = (apreensoes_armas + apreensoes_drogas) / total_crimes
+        taxa_operacao = operacoes_ativas / total_crimes
+        efetividade_global = (taxa_prisao * 0.4 + taxa_apreensao * 0.3 + taxa_operacao * 0.3) * 100
+    
+    # Determinar nível de risco usando escala mais refinada
+    if score_final >= 120:
         nivel_risco = '⚫ Crítico'
-        cor_risco = '#4A0000'
-    elif score_final >= 100:
+        cor_risco = '#2B0000'
+    elif score_final >= 80:
         nivel_risco = '🔴 Muito Alto'
         cor_risco = '#8B0000'
     elif score_final >= 50:
         nivel_risco = '🟠 Alto'
         cor_risco = '#FF0000'
-    elif score_final >= 25:
+    elif score_final >= 30:
         nivel_risco = '🟡 Médio-Alto'
         cor_risco = '#FF4500'
-    elif score_final >= 10:
+    elif score_final >= 15:
         nivel_risco = '🟡 Médio'
         cor_risco = '#FFA500'
-    elif score_final >= 5:
+    elif score_final >= 8:
         nivel_risco = '🟢 Baixo-Médio'
         cor_risco = '#FFD700'
-    elif score_final >= 1:
+    elif score_final >= 3:
         nivel_risco = '🟢 Baixo'
         cor_risco = '#FFFF00'
     else:
         nivel_risco = '🟢 Muito Baixo'
         cor_risco = '#90EE90'
     
-    # Recomendações
+    # Recomendações baseadas em análise completa
     recomendacoes = []
-    if nivel_risco in ['Crítico', 'Alto']:
+    
+    # Recomendações por nível de risco
+    if '⚫' in nivel_risco or '🔴' in nivel_risco:  # Crítico/Muito Alto
         recomendacoes.extend([
-            "Aumentar patrulhamento na região",
-            "Implementar operações preventivas",
-            "Reforçar iluminação pública"
+            "URGENT: Aumentar patrulhamento imediatamente",
+            "Implementar operações preventivas intensivas",
+            "Reforçar segurança pública e iluminação"
         ])
-    elif nivel_risco in ['Médio-Alto', 'Médio']:
+        if mortes_confronto > 0:
+            recomendacoes.append("Revisar protocolos de uso da força")
+    elif '🟠' in nivel_risco:  # Alto
+        recomendacoes.extend([
+            "Intensificar patrulhamento preventivo",
+            "Implementar operações especiais focadas",
+            "Monitorar pontos críticos identificados"
+        ])
+    elif '🟡' in nivel_risco:  # Médio-Alto/Médio
         recomendacoes.extend([
             "Manter vigilância regular",
-            "Implementar ações comunitárias de segurança"
+            "Implementar ações comunitárias de segurança",
+            "Focar em prevenção situacional"
         ])
-    else:
+    else:  # Baixo
         recomendacoes.append("Manter ações preventivas atuais")
     
+    # Recomendações específicas baseadas nos indicadores
     if total_operacoes == 0 and total_crimes > 5:
-        recomendacoes.append("Considerar implementar operações policiais")
+        recomendacoes.append("👮 Implementar operações policiais no bairro")
     
-    # Criar popup content
+    if prisoes_realizadas == 0 and total_crimes > 10:
+        recomendacoes.append("🔒 Focar em operações com prisões efetivas")
+    
+    if apreensoes_armas == 0 and 'roubo' in str(padroes_crimes.get('tipos_predominantes', {})).lower():
+        recomendacoes.append("🔫 Intensificar busca e apreensão de armas")
+    
+    if apreensoes_drogas == 0 and total_crimes > 15:
+        recomendacoes.append("💊 Investigar possível atividade de tráfico")
+    
+    if efetividade_global < 10 and total_crimes > 20:
+        recomendacoes.append("📈 Melhorar efetividade das operações atuais")
+    
+    # Criar popup content COMPLETO com todos os indicadores
     popup_content = f"""
-    <div style="font-family: Arial, sans-serif; width: 300px;">
-        <h4 style="color: #2E86AB; margin-bottom: 10px;">{bairro}</h4>
-        <hr style="margin: 5px 0;">
-        <p><strong>📊 Crimes Totais:</strong> {total_crimes}</p>
-        <p><strong>👮 Policiais Envolvidos:</strong> {total_operacoes}</p>
-        <p><strong>💀 Mortes em Intervenção:</strong> {mortes_confronto}</p>
-        <p><strong>🔒 Prisões Realizadas:</strong> {prisoes_realizadas}</p>
-        <p><strong>📈 Score Sinérgico:</strong> {round(score_final, 2)}</p>
-        <p><strong>⚠️ Nível de Risco:</strong> {nivel_risco}</p>
+    <div style="font-family: 'Segoe UI', Arial, sans-serif; width: 380px; padding: 8px;">
+        <h4 style="color: #1f4e79; margin: 0 0 12px 0; padding-bottom: 8px; border-bottom: 2px solid #e1e5e9; font-size: 16px;">
+            📍 {bairro}
+        </h4>
+        
+        <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+            <h5 style="color: #495057; margin: 0 0 8px 0; font-size: 14px;">📊 Estatísticas de Crimes</h5>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
+                <div><strong>📊 Total:</strong> {total_crimes}</div>
+                <div><strong>👮 Policiais:</strong> {int(total_operacoes)}</div>
+                <div><strong>🔒 Prisões:</strong> {int(prisoes_realizadas)}</div>
+                <div><strong>💀 Mortes:</strong> {int(mortes_confronto)}</div>
+            </div>
+        </div>
+        
+        <div style="background: #e8f4fd; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+            <h5 style="color: #0066cc; margin: 0 0 8px 0; font-size: 14px;">🔫 Apreensões & Operações</h5>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px;">
+                <div><strong>🔫 Armas:</strong> {int(apreensoes_armas)}</div>
+                <div><strong>💊 Drogas:</strong> {apreensoes_drogas:.1f}kg</div>
+                <div><strong>🚨 Op. Ativas:</strong> {int(operacoes_ativas)}</div>
+                <div><strong>📈 Efetividade:</strong> {efetividade_global:.1f}%</div>
+            </div>
+        </div>
+        
+        <div style="background: #f0f0f0; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
+            <div style="font-size: 14px;"><strong>⚠️ Risco:</strong> <span style="font-weight: bold;">{nivel_risco}</span></div>
+            <div style="font-size: 13px; color: #666;"><strong>📈 Score:</strong> {score_final:.1f}</div>
+        </div>
     </div>
     """
     
@@ -329,7 +415,15 @@ def calculate_synergistic_security_analysis(df_crimes, df_operacoes, bairro):
         'total_operacoes': int(total_operacoes),
         'mortes_confronto': int(mortes_confronto),
         'prisoes_realizadas': int(prisoes_realizadas),
+        'apreensoes_armas': int(apreensoes_armas),
+        'apreensoes_drogas': round(apreensoes_drogas, 2),
+        'operacoes_ativas': int(operacoes_ativas),
+        'operacoes_tipos': operacoes_tipos,
+        'efetividade_global': round(efetividade_global, 2),
         'score_sinergico': round(score_final, 2),
+        'score_bruto': round(score_bruto, 2),
+        'penalidades': round(penalidades, 2),
+        'beneficios': round(beneficios, 2),
         'nivel_risco': nivel_risco,
         'cor': cor_risco,
         'analise_temporal': analise_temporal,
