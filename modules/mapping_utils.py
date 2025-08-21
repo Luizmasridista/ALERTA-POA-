@@ -165,31 +165,43 @@ def map_bairro_name(bairro_name):
     return mapping.get(bairro_name, bairro_name)
 
 
-def get_color_for_map_integrated(total_crimes, operacoes_policiais=0):
-    """Determina cor para o mapa baseada em dados integrados.
+def get_color_for_map_integrated(total_crimes, operacoes_policiais=0, mortes_confronto=0):
+    """Determina cor para o mapa baseada em dados integrados incluindo mortes.
     
     Args:
         total_crimes (int): Número total de crimes
         operacoes_policiais (int): Número de operações policiais
+        mortes_confronto (int): Número de mortes em confronto policial
         
     Returns:
         str: Código de cor hexadecimal
     """
-    # Fator de ajuste baseado em operações policiais
-    fator_operacoes = max(0.5, 1 - (operacoes_policiais * 0.1))
-    crimes_ajustados = total_crimes * fator_operacoes
+    # Calcular score de risco integrado
+    score_base = total_crimes
     
-    if crimes_ajustados >= 100:
+    # Penalidade por mortes em confronto (peso muito alto)
+    if mortes_confronto > 0:
+        score_base += mortes_confronto * 50  # Cada morte vale 50 crimes
+    
+    # Fator de redução baseado em operações policiais efetivas
+    if operacoes_policiais > 0:
+        efetividade = min(0.4, operacoes_policiais / max(1, total_crimes))  # Max 40% de redução
+        score_base = score_base * (1 - efetividade)
+    
+    # Determinar cor baseada no score final
+    if score_base >= 150:
+        return '#4A0000'  # Vermelho muito escuro - Crítico
+    elif score_base >= 100:
         return '#8B0000'  # Vermelho escuro - Muito Alto
-    elif crimes_ajustados >= 50:
+    elif score_base >= 50:
         return '#FF0000'  # Vermelho - Alto
-    elif crimes_ajustados >= 25:
+    elif score_base >= 25:
         return '#FF4500'  # Laranja vermelho - Médio-Alto
-    elif crimes_ajustados >= 10:
+    elif score_base >= 10:
         return '#FFA500'  # Laranja - Médio
-    elif crimes_ajustados >= 5:
+    elif score_base >= 5:
         return '#FFD700'  # Dourado - Baixo-Médio
-    elif crimes_ajustados >= 1:
+    elif score_base >= 1:
         return '#FFFF00'  # Amarelo - Baixo
     else:
         return '#90EE90'  # Verde claro - Muito Baixo
@@ -220,31 +232,43 @@ def get_color_for_map_original(crime_count):
         return '#90EE90'  # Verde claro - Muito Baixo
 
 
-def get_risk_level_for_map_integrated(total_crimes, operacoes_policiais=0):
-    """Determina nível de risco baseado em dados integrados.
+def get_risk_level_for_map_integrated(total_crimes, operacoes_policiais=0, mortes_confronto=0):
+    """Determina nível de risco baseado em dados integrados incluindo mortes.
     
     Args:
         total_crimes (int): Número total de crimes
         operacoes_policiais (int): Número de operações policiais
+        mortes_confronto (int): Número de mortes em confronto policial
         
     Returns:
         str: Nível de risco
     """
-    # Fator de ajuste baseado em operações policiais
-    fator_operacoes = max(0.5, 1 - (operacoes_policiais * 0.1))
-    crimes_ajustados = total_crimes * fator_operacoes
+    # Calcular score de risco integrado
+    score_base = total_crimes
     
-    if crimes_ajustados >= 100:
+    # Penalidade por mortes em confronto (peso muito alto)
+    if mortes_confronto > 0:
+        score_base += mortes_confronto * 50  # Cada morte vale 50 crimes
+    
+    # Fator de redução baseado em operações policiais efetivas
+    if operacoes_policiais > 0:
+        efetividade = min(0.4, operacoes_policiais / max(1, total_crimes))  # Max 40% de redução
+        score_base = score_base * (1 - efetividade)
+    
+    # Determinar nível baseado no score final
+    if score_base >= 150:
+        return "⚫ Crítico"
+    elif score_base >= 100:
         return "🔴 Muito Alto"
-    elif crimes_ajustados >= 50:
+    elif score_base >= 50:
         return "🟠 Alto"
-    elif crimes_ajustados >= 25:
+    elif score_base >= 25:
         return "🟡 Médio-Alto"
-    elif crimes_ajustados >= 10:
+    elif score_base >= 10:
         return "🟡 Médio"
-    elif crimes_ajustados >= 5:
+    elif score_base >= 5:
         return "🟢 Baixo-Médio"
-    elif crimes_ajustados >= 1:
+    elif score_base >= 1:
         return "🟢 Baixo"
     else:
         return "🟢 Muito Baixo"

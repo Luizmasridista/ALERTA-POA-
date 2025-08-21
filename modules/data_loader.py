@@ -26,24 +26,24 @@ def load_data():
         pd.DataFrame: DataFrame com dados de criminalidade processados
     """
     try:
-        # Tentar carregar dados integrados primeiro no diretório data
-        arquivos_integrados = glob.glob('data/dados_criminalidade_operacoes_integrado_*.csv')
-        
-        if arquivos_integrados:
-            # Usar o arquivo mais recente
-            arquivo_mais_recente = max(arquivos_integrados)
-            df = pd.read_csv(arquivo_mais_recente)
+        # Tentar carregar dados integrados primeiro
+        if os.path.exists('data/dados_criminalidade_operacoes_integrado.csv'):
+            df = pd.read_csv('data/dados_criminalidade_operacoes_integrado.csv')
+        elif os.path.exists('data/dados_criminalidade_poa.csv'):
+            df = pd.read_csv('data/dados_criminalidade_poa.csv')
         else:
-            # Fallback para dados originais
-            csv_files = glob.glob('data/dados_criminalidade_poa_atualizado_*.csv')
-            
-            if not csv_files:
-                st.error("❌ Nenhum arquivo de dados encontrado no diretório data/")
-                return pd.DataFrame()
-            
-            # Usar o arquivo mais recente
-            csv_file = max(csv_files)
-            df = pd.read_csv(csv_file)
+            # Fallback para arquivos com timestamps se existirem
+            arquivos_integrados = glob.glob('data/dados_criminalidade_operacoes_integrado_*.csv')
+            if arquivos_integrados:
+                arquivo_mais_recente = max(arquivos_integrados)
+                df = pd.read_csv(arquivo_mais_recente)
+            else:
+                csv_files = glob.glob('data/dados_criminalidade_poa_*.csv')
+                if not csv_files:
+                    st.error("❌ Nenhum arquivo de dados encontrado no diretório data/")
+                    return pd.DataFrame()
+                csv_file = max(csv_files)
+                df = pd.read_csv(csv_file)
         
         # Padronizar nomes das colunas para compatibilidade
         column_mapping = {
@@ -86,16 +86,19 @@ def load_security_index_data():
         pd.DataFrame: DataFrame com dados de índice de segurança
     """
     try:
-        # Procurar pelo arquivo mais recente de índice de segurança no diretório data
-        arquivos_seguranca = glob.glob('data/indice_seguranca_bairros_*.csv')
-        
-        if arquivos_seguranca:
-            # Usar o arquivo mais recente
-            arquivo_mais_recente = max(arquivos_seguranca)
-            df_seguranca = pd.read_csv(arquivo_mais_recente)
+        # Tentar carregar arquivo principal primeiro
+        if os.path.exists('data/indice_seguranca_bairros.csv'):
+            df_seguranca = pd.read_csv('data/indice_seguranca_bairros.csv')
             return df_seguranca
         else:
-            return pd.DataFrame()
+            # Fallback para arquivos com timestamps se existirem
+            arquivos_seguranca = glob.glob('data/indice_seguranca_bairros_*.csv')
+            if arquivos_seguranca:
+                arquivo_mais_recente = max(arquivos_seguranca)
+                df_seguranca = pd.read_csv(arquivo_mais_recente)
+                return df_seguranca
+            else:
+                return pd.DataFrame()
             
     except Exception as e:
         st.error(f"❌ Erro ao carregar dados de índice de segurança: {str(e)}")

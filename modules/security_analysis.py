@@ -36,8 +36,8 @@ def calculate_risk_score(df, bairro):
             'tendencia': 'Estável'
         }
     
-    # Filtrar dados do bairro
-    df_bairro = df[df['bairro'].str.upper() == bairro.upper()]
+    # Filtrar dados do bairro - normalizar para comparação consistente
+    df_bairro = df[df['bairro'].str.upper().str.strip() == bairro.upper().strip()]
     
     if df_bairro.empty:
         return {
@@ -181,19 +181,30 @@ def calculate_synergistic_security_analysis(df_crimes, df_operacoes, bairro):
     """Realiza análise sinérgica detalhada de segurança.
     
     Args:
-        df_crimes (pd.DataFrame): DataFrame com dados de crimes
-        df_operacoes (pd.DataFrame): DataFrame com dados de operações policiais
+        df_crimes (pd.DataFrame): DataFrame com dados de crimes (dados integrados)
+        df_operacoes (pd.DataFrame): DataFrame com dados de operações policiais (não usado, dados já integrados)
         bairro (str): Nome do bairro
         
     Returns:
         dict: Análise sinérgica completa
     """
-    # Análise básica de crimes
-    crimes_bairro = df_crimes[df_crimes['bairro'].str.upper() == bairro.upper()] if not df_crimes.empty else pd.DataFrame()
-    operacoes_bairro = df_operacoes[df_operacoes['bairro'].str.upper() == bairro.upper()] if not df_operacoes.empty else pd.DataFrame()
+    # Usar dados integrados do df_crimes que já contém informações de operações
+    crimes_bairro = df_crimes[df_crimes['bairro'].str.upper().str.strip() == bairro.upper().strip()] if not df_crimes.empty else pd.DataFrame()
+    
+    # Filtrar operações para o bairro específico
+    operacoes_bairro = df_operacoes[df_operacoes['bairro'].str.upper().str.strip() == bairro.upper().strip()] if df_operacoes is not None and not df_operacoes.empty else pd.DataFrame()
     
     total_crimes = len(crimes_bairro)
-    total_operacoes = len(operacoes_bairro)
+    
+    # Extrair dados de operações dos dados integrados
+    if not crimes_bairro.empty:
+        total_operacoes = crimes_bairro['policiais_envolvidos'].sum() if 'policiais_envolvidos' in crimes_bairro.columns else 0
+        mortes_confronto = crimes_bairro['mortes_intervencao_policial'].sum() if 'mortes_intervencao_policial' in crimes_bairro.columns else 0
+        prisoes_realizadas = crimes_bairro['prisoes_realizadas'].sum() if 'prisoes_realizadas' in crimes_bairro.columns else 0
+    else:
+        total_operacoes = 0
+        mortes_confronto = 0
+        prisoes_realizadas = 0
     
     # Análise temporal
     analise_temporal = {
@@ -234,37 +245,49 @@ def calculate_synergistic_security_analysis(df_crimes, df_operacoes, bairro):
         if 'periodo_dia' in crimes_bairro.columns:
             padroes_crimes['periodos_criticos'] = crimes_bairro['periodo_dia'].value_counts().to_dict()
     
-    # Score sinérgico
-    score_base = total_crimes * 10  # Score base dos crimes
+    # Score sinérgico considerando mortes em confronto
+    score_base = total_crimes
     
-    # Fator de redução por operações
-    fator_operacoes = max(0.3, 1 - (total_operacoes * 0.1))
+    # Penalidade por mortes em confronto (peso muito alto)
+    if mortes_confronto > 0:
+        score_base += mortes_confronto * 50  # Cada morte vale 50 crimes
+    
+    # Fator de redução baseado em operações policiais efetivas
+    if total_operacoes > 0:
+        efetividade = min(0.4, total_operacoes / max(1, total_crimes))  # Max 40% de redução
+        fator_operacoes = 1 - efetividade
+    else:
+        fator_operacoes = 1.0
+    
     score_ajustado = score_base * fator_operacoes
     
-    # Normalizar para 0-100
-    score_final = min(100, score_ajustado)
+    # Normalizar para escala apropriada
+    score_final = score_ajustado
     
-    # Determinar nível de risco
-    if score_final >= 80:
-        nivel_risco = 'Crítico'
+    # Determinar nível de risco usando a mesma lógica do mapping_utils
+    if score_final >= 150:
+        nivel_risco = '⚫ Crítico'
+        cor_risco = '#4A0000'
+    elif score_final >= 100:
+        nivel_risco = '🔴 Muito Alto'
         cor_risco = '#8B0000'
-    elif score_final >= 60:
-        nivel_risco = 'Alto'
+    elif score_final >= 50:
+        nivel_risco = '🟠 Alto'
         cor_risco = '#FF0000'
-    elif score_final >= 40:
-        nivel_risco = 'Médio-Alto'
-        cor_risco = '#FF4500'
     elif score_final >= 25:
-        nivel_risco = 'Médio'
-        cor_risco = '#FFA500'
+        nivel_risco = '🟡 Médio-Alto'
+        cor_risco = '#FF4500'
     elif score_final >= 10:
-        nivel_risco = 'Baixo-Médio'
+        nivel_risco = '🟡 Médio'
+        cor_risco = '#FFA500'
+    elif score_final >= 5:
+        nivel_risco = '🟢 Baixo-Médio'
         cor_risco = '#FFD700'
     elif score_final >= 1:
-        nivel_risco = 'Baixo'
+        nivel_risco = '🟢 Baixo'
         cor_risco = '#FFFF00'
     else:
-        nivel_risco = 'Muito Baixo'
+        nivel_risco = '🟢 Muito Baixo'
         cor_risco = '#90EE90'
     
     # Recomendações
@@ -286,17 +309,34 @@ def calculate_synergistic_security_analysis(df_crimes, df_operacoes, bairro):
     if total_operacoes == 0 and total_crimes > 5:
         recomendacoes.append("Considerar implementar operações policiais")
     
+    # Criar popup content
+    popup_content = f"""
+    <div style="font-family: Arial, sans-serif; width: 300px;">
+        <h4 style="color: #2E86AB; margin-bottom: 10px;">{bairro}</h4>
+        <hr style="margin: 5px 0;">
+        <p><strong>📊 Crimes Totais:</strong> {total_crimes}</p>
+        <p><strong>👮 Policiais Envolvidos:</strong> {total_operacoes}</p>
+        <p><strong>💀 Mortes em Intervenção:</strong> {mortes_confronto}</p>
+        <p><strong>🔒 Prisões Realizadas:</strong> {prisoes_realizadas}</p>
+        <p><strong>📈 Score Sinérgico:</strong> {round(score_final, 2)}</p>
+        <p><strong>⚠️ Nível de Risco:</strong> {nivel_risco}</p>
+    </div>
+    """
+    
     return {
         'bairro': bairro,
         'total_crimes': total_crimes,
-        'total_operacoes': total_operacoes,
+        'total_operacoes': int(total_operacoes),
+        'mortes_confronto': int(mortes_confronto),
+        'prisoes_realizadas': int(prisoes_realizadas),
         'score_sinergico': round(score_final, 2),
         'nivel_risco': nivel_risco,
-        'cor_risco': cor_risco,
+        'cor': cor_risco,
         'analise_temporal': analise_temporal,
         'padroes_crimes': padroes_crimes,
         'recomendacoes': recomendacoes,
-        'fator_operacoes': round(fator_operacoes, 3)
+        'fator_operacoes': round(fator_operacoes, 3),
+        'popup_content': popup_content
     }
 
 

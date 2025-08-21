@@ -15,271 +15,8 @@ from datetime import datetime
 
 
 def render_tip_cards(all_tips):
-    """Renderiza cards de dicas de segurança em grid responsivo e acessível.
-    
-    Args:
-        all_tips (list): Lista de dicas/alertas para exibir
-    """
-    def get_alert_icon(tipo):
-        """Retorna ícone baseado no tipo de alerta."""
-        icons = {
-            'Volume Alto': '📊',
-            'Aumento Significativo': '📈',
-            'Crimes Graves': '🚨',
-            'Tendência Crescente': '⬆️',
-            'Área de Risco': '⚠️',
-            'Área de Alto Risco': '🔴',
-            'Horário de Risco': '🕐',
-            'Prevenção Específica': '🛡️',
-            'Prevenção Geral': '🔒',
-            'Segurança Pessoal': '👤',
-            'Transporte Público': '🚌',
-            'Emergência': '🚨',
-            'Tecnologia e Segurança': '📱',
-            'Vigilância Comunitária': '👥'
-        }
-        return icons.get(tipo, '🔔')
-    
-    def get_priority_config(prioridade):
-        """Retorna configuração de cores e estilo baseada na prioridade."""
-        configs = {
-            'Crítica': {
-                'background': '#dc3545',
-                'border': '#b02a37',
-                'icon_bg': 'rgba(255, 255, 255, 0.2)',
-                'text_color': '#ffffff'
-            },
-            'Alta': {
-                'background': '#fd7e14',
-                'border': '#e8650e',
-                'icon_bg': 'rgba(255, 255, 255, 0.2)',
-                'text_color': '#ffffff'
-            },
-            'Média': {
-                'background': '#0d6efd',
-                'border': '#0a58ca',
-                'icon_bg': 'rgba(255, 255, 255, 0.2)',
-                'text_color': '#ffffff'
-            },
-            'Baixa': {
-                'background': '#198754',
-                'border': '#146c43',
-                'icon_bg': 'rgba(255, 255, 255, 0.2)',
-                'text_color': '#ffffff'
-            }
-        }
-        return configs.get(prioridade, configs['Média'])
-    
-    if all_tips:
-        # Limitar a 8 cards para melhor experiência
-        display_tips = all_tips[:8]
-        
-        # CSS moderno e acessível para cards em grid
-        modern_css = """
-        <style>
-        .tips-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            padding: 1rem 0;
-            max-width: 100%;
-        }
-        
-        .tip-card {
-            position: relative;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            background: #ffffff;
-        }
-        
-        .tip-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-        }
-        
-        .tip-card:focus-within {
-            outline: 2px solid #0d6efd;
-            outline-offset: 2px;
-        }
-        
-        .card-header {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-        
-        .card-icon-container {
-            flex-shrink: 0;
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-        }
-        
-        .card-title {
-            flex: 1;
-            min-width: 0;
-        }
-        
-        .card-type {
-            font-weight: 600;
-            font-size: 1rem;
-            color: #212529;
-            margin-bottom: 0.25rem;
-            line-height: 1.3;
-        }
-        
-        .card-location {
-            font-size: 0.875rem;
-            color: #6c757d;
-            font-weight: 400;
-        }
-        
-        .card-description {
-            color: #495057;
-            font-size: 0.9rem;
-            line-height: 1.5;
-            margin-bottom: 1rem;
-        }
-        
-        .card-priority {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.375rem 0.75rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 0.5rem;
-        }
-        
-        /* Responsividade */
-        @media (max-width: 768px) {
-            .tips-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-                padding: 0.5rem;
-            }
-            
-            .tip-card {
-                padding: 1.25rem;
-            }
-            
-            .card-icon-container {
-                width: 36px;
-                height: 36px;
-                font-size: 1.1rem;
-            }
-            
-            .card-type {
-                font-size: 0.95rem;
-            }
-            
-            .card-description {
-                font-size: 0.85rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .tip-card {
-                padding: 1rem;
-            }
-            
-            .card-header {
-                gap: 0.5rem;
-            }
-        }
-        
-        /* Estados de acessibilidade */
-        @media (prefers-reduced-motion: reduce) {
-            .tip-card {
-                transition: none;
-            }
-            
-            .tip-card:hover {
-                transform: none;
-            }
-        }
-        
-        /* Alto contraste */
-        @media (prefers-contrast: high) {
-            .tip-card {
-                border: 2px solid #000000;
-            }
-            
-            .card-type {
-                color: #000000;
-            }
-            
-            .card-description {
-                color: #000000;
-            }
-        }
-        </style>
-        """
-        
-        # Renderizar CSS
-        st.markdown(modern_css, unsafe_allow_html=True)
-        
-        # Criar HTML do grid de cards
-        grid_html = '<div class="tips-grid">'
-        
-        for tip in display_tips:
-            icon = get_alert_icon(tip['tipo'])
-            config = get_priority_config(tip['prioridade'])
-            
-            grid_html += f"""
-            <article class="tip-card" 
-                     style="border-left-color: {config['border']};"
-                     role="article" 
-                     tabindex="0"
-                     aria-label="Dica de segurança: {tip['tipo']}">
-                
-                <header class="card-header">
-                    <div class="card-icon-container" 
-                         style="background: {config['icon_bg']}; color: {config['background']};">
-                        {icon}
-                    </div>
-                    <div class="card-title">
-                        <h3 class="card-type">{tip['tipo']}</h3>
-                        <p class="card-location">{tip['bairro']}</p>
-                    </div>
-                </header>
-                
-                <div class="card-description">
-                    {tip['descricao']}
-                </div>
-                
-                <footer>
-                    <span class="card-priority" 
-                          style="background: {config['background']}; color: {config['text_color']};">
-                        Prioridade {tip['prioridade']}
-                    </span>
-                </footer>
-            </article>
-            """
-        
-        grid_html += '</div>'
-        
-        # Renderizar grid
-        st.markdown(grid_html, unsafe_allow_html=True)
-        
-        # Informação adicional
-        total_tips = len(all_tips)
-        if total_tips > 8:
-            st.info(f"💡 Exibindo 8 de {total_tips} dicas disponíveis. As dicas são priorizadas por relevância e urgência.")
-        
-    else:
-        st.info("📊 Nenhum alerta disponível no momento.")
+    """Função removida: renderização de dicas úteis não é mais necessária."""
+    pass
 
 
 def render_metrics_section(risk_score, total_crimes, most_common_crime):
@@ -482,27 +219,8 @@ def render_prediction_charts(future_dates, predictions):
 
 
 def render_additional_info_expander():
-    """Renderiza expander com informações adicionais de segurança."""
-    with st.expander("📋 Mais Informações de Segurança"):
-        col_info1, col_info2 = st.columns(2)
-        
-        with col_info1:
-            st.markdown("""
-            **🏠 Segurança Residencial:**
-            - Mantenha portões e portas sempre trancados
-            - Instale sistemas de iluminação externa
-            - Evite postar viagens nas redes sociais
-            - Conheça seus vizinhos e participe da vigilância comunitária
-            """)
-            
-        with col_info2:
-            st.markdown("""
-            **🚗 Segurança no Trânsito:**
-            - Mantenha vidros fechados e portas travadas
-            - Evite parar em semáforos de áreas isoladas
-            - Tenha rotas alternativas planejadas
-            - Não reaja a assaltos, priorize sua segurança
-            """)
+    """Função removida: informações adicionais de segurança não são mais necessárias."""
+    pass
 
 
 def render_neighborhood_effectiveness(df):
@@ -566,18 +284,79 @@ def render_neighborhood_effectiveness(df):
     top_bairros = sorted(bairros_stats.items(), key=lambda x: x[1]['crimes'], reverse=True)[:10]
     
     if top_bairros:
+        # Criar gráfico de barras comparativo
+        bairros_nomes = [bairro for bairro, _ in top_bairros]
+        crimes_counts = [stats['crimes'] for _, stats in top_bairros]
+        prisoes_counts = [stats['operacoes'] for _, stats in top_bairros]
+        
+        # Gráfico de barras duplo
+        fig = go.Figure()
+        
+        fig.add_trace(go.Bar(
+            name='Crimes',
+            x=bairros_nomes,
+            y=crimes_counts,
+            marker_color='#ff6b6b',
+            text=crimes_counts,
+            textposition='auto',
+        ))
+        
+        fig.add_trace(go.Bar(
+            name='Prisões',
+            x=bairros_nomes,
+            y=prisoes_counts,
+            marker_color='#4ecdc4',
+            text=prisoes_counts,
+            textposition='auto',
+        ))
+        
+        fig.update_layout(
+            title='Crimes vs Prisões por Bairro',
+            xaxis_title='Bairros',
+            yaxis_title='Quantidade',
+            barmode='group',
+            height=400,
+            showlegend=True
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+        
+        # Tabela detalhada com métricas
         col1, col2 = st.columns(2)
         
         with col1:
-            st.markdown("**🏘️ Bairros com Mais Crimes:**")
+            st.markdown("**🏘️ Top 5 Bairros - Análise Detalhada:**")
             for bairro, stats in top_bairros[:5]:
-                st.markdown(f"{stats['cor']} **{bairro}**: {stats['crimes']} crimes - Efetividade: *{stats['efetividade']}*")
+                ratio = (stats['operacoes'] / stats['crimes'] * 100) if stats['crimes'] > 0 else 0
+                st.markdown(
+                    f"{stats['cor']} **{bairro}**:\n"
+                    f"   • Crimes: {stats['crimes']}\n"
+                    f"   • Prisões: {stats['operacoes']}\n"
+                    f"   • Taxa de Efetividade: {ratio:.1f}%"
+                )
         
         with col2:
-            st.markdown("**📊 Estatísticas de Efetividade:**")
+            st.markdown("**📊 Métricas de Performance:**")
             if len(top_bairros) > 5:
                 for bairro, stats in top_bairros[5:10]:
-                    st.markdown(f"{stats['cor']} **{bairro}**: {stats['crimes']} crimes - Efetividade: *{stats['efetividade']}*")
+                    ratio = (stats['operacoes'] / stats['crimes'] * 100) if stats['crimes'] > 0 else 0
+                    st.markdown(
+                        f"{stats['cor']} **{bairro}**:\n"
+                        f"   • Crimes: {stats['crimes']}\n"
+                        f"   • Prisões: {stats['operacoes']}\n"
+                        f"   • Taxa de Efetividade: {ratio:.1f}%"
+                    )
+            
+            # Estatísticas gerais
+            total_crimes_top10 = sum(stats['crimes'] for _, stats in top_bairros)
+            total_prisoes_top10 = sum(stats['operacoes'] for _, stats in top_bairros)
+            efetividade_geral = (total_prisoes_top10 / total_crimes_top10 * 100) if total_crimes_top10 > 0 else 0
+            
+            st.markdown("---")
+            st.markdown("**📈 Resumo Geral (Top 10):**")
+            st.markdown(f"• Total de Crimes: {total_crimes_top10:,}")
+            st.markdown(f"• Total de Prisões: {total_prisoes_top10:,}")
+            st.markdown(f"• Efetividade Média: {efetividade_geral:.1f}%")
     else:
         st.info("📊 Dados insuficientes para análise de efetividade")
 
@@ -995,6 +774,7 @@ def render_advanced_charts(df):
                     
                     # Pegar os 5 tipos de crime mais comuns
                     top_crimes = df_temp['tipo_crime'].value_counts().head(5).index
+                    
                     df_filtered = df_temp[df_temp['tipo_crime'].isin(top_crimes)]
                     
                     if len(df_filtered) > 0:

@@ -145,6 +145,33 @@ h2 {
     }
 }
 
+/* Otimizações para o mapa e redução de carregamento */
+.stApp > div[data-testid="stVerticalBlock"] > div.element-container > div.stColumn > div {
+    transition: none !important;
+}
+
+/* Remover efeitos de carregamento desnecessários */
+.stSpinner {
+    display: none !important;
+}
+
+/* Otimizar renderização do mapa */
+iframe[title="streamlit_folium.st_folium"] {
+    border: none;
+    transition: none !important;
+    will-change: auto;
+}
+
+/* Reduzir sombreamento durante carregamento */
+.stApp {
+    background-color: #ffffff;
+}
+
+.main .block-container {
+    background-color: #ffffff;
+    transition: none !important;
+}
+
 /* Acessibilidade */
 @media (prefers-reduced-motion: reduce) {
     * {
@@ -193,12 +220,44 @@ h2 {
 # Todas as funções de visualização foram movidas para modules/visualization.py
 
 def main():
+    # Teste básico para verificar se a função main está sendo executada
     st.title("🚨 Alerta POA - Sistema Integrado de Segurança")
+    st.write("✅ Sistema iniciado com sucesso!")
+    st.write("📊 Esta é uma versão de teste para identificar problemas.")
     
-    # Carregar dados integrados usando os módulos
-    df = data_loader.load_data()
-    bairros_stats = data_loader.load_neighborhood_stats()
-    df_seguranca = data_loader.load_security_index_data()
+    # Teste simples de métricas
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Teste 1", "100")
+    with col2:
+        st.metric("Teste 2", "200")
+    with col3:
+        st.metric("Teste 3", "300")
+    
+    st.success("🎉 Se você está vendo esta mensagem, o sistema está funcionando!")
+    
+    # Comentar temporariamente o carregamento de dados
+    # try:
+    #     # Carregar dados integrados usando os módulos
+    #     with st.spinner("Carregando dados de criminalidade..."):
+    #         df = data_loader.load_data()
+    #         st.write(f"✅ Dados de criminalidade carregados: {len(df)} registros")
+    #     
+    #     with st.spinner("Carregando estatísticas dos bairros..."):
+    #         bairros_stats = data_loader.load_neighborhood_stats()
+    #         st.write(f"✅ Estatísticas dos bairros carregadas: {len(bairros_stats)} bairros")
+    #     
+    #     with st.spinner("Carregando índice de segurança..."):
+    #         df_seguranca = data_loader.load_security_index_data()
+    #         st.write(f"✅ Dados de segurança carregados: {len(df_seguranca)} registros")
+    # 
+    # except Exception as e:
+    #     st.error(f"❌ Erro crítico na inicialização: {str(e)}")
+    #     import traceback
+    #     st.code(traceback.format_exc())
+    #     return
+    
+    return  # Retornar aqui para evitar executar o resto do código
     
     # Calcular risco atual integrado
     if not df.empty and bairros_stats:
@@ -251,115 +310,6 @@ def main():
     # Gerar alertas
     alerts = security_analysis.generate_alerts(filtered_df, threshold_crimes=10, threshold_increase=0.3)
     
-    # Seção de dicas úteis com layout melhorado
-    st.subheader("💡 Dicas Úteis de Segurança")
-    
-    # Função para gerar dicas baseadas nos dados atuais
-    def generate_contextual_tips(df, bairros_stats):
-        contextual_tips = []
-        
-        # Dica baseada no bairro mais perigoso
-        if bairros_stats:
-            top_bairro = max(bairros_stats.items(), key=lambda x: x[1])[0]
-            contextual_tips.append({
-                'tipo': 'Área de Alto Risco',
-                'bairro': top_bairro,
-                'descricao': f'Redobrar cuidados na região do {top_bairro}. Evite circular sozinho(a) e prefira horários de maior movimento.',
-                'prioridade': 'Alta'
-            })
-        
-        # Dica baseada no horário mais perigoso
-        if not df.empty and 'periodo_dia' in df.columns:
-            periodo_perigoso = df['periodo_dia'].mode()[0] if len(df['periodo_dia'].dropna()) > 0 else 'Noite'
-            contextual_tips.append({
-                'tipo': 'Horário de Risco',
-                'bairro': 'Todas as Regiões',
-                'descricao': f'Maior incidência de crimes no período: {periodo_perigoso}. Reforce os cuidados neste horário.',
-                'prioridade': 'Média'
-            })
-        
-        # Dica baseada no tipo de crime mais comum
-        if not df.empty and 'tipo_crime' in df.columns:
-            crime_comum = df['tipo_crime'].mode()[0] if len(df['tipo_crime'].dropna()) > 0 else 'Roubo'
-            if 'ROUBO' in crime_comum.upper():
-                contextual_tips.append({
-                    'tipo': 'Prevenção Específica',
-                    'bairro': 'Foco em Roubos',
-                    'descricao': 'Roubos são frequentes na região. Evite exibir objetos de valor e mantenha-se em locais movimentados.',
-                    'prioridade': 'Alta'
-                })
-            elif 'FURTO' in crime_comum.upper():
-                contextual_tips.append({
-                    'tipo': 'Prevenção Específica',
-                    'bairro': 'Foco em Furtos',
-                    'descricao': 'Furtos são comuns. Mantenha pertences sempre à vista e evite deixar objetos em veículos.',
-                    'prioridade': 'Média'
-                })
-        
-        return contextual_tips
-    
-    # Gerar dicas contextuais baseadas nos dados
-    contextual_tips = generate_contextual_tips(filtered_df, bairros_stats)
-    
-    # Adicionar dicas gerais de segurança
-    general_tips = [
-        {
-            'tipo': 'Prevenção Geral',
-            'bairro': 'Todas as Regiões',
-            'descricao': 'Evite andar sozinho(a) durante a madrugada. Prefira locais bem iluminados e movimentados.',
-            'prioridade': 'Média'
-        },
-        {
-            'tipo': 'Segurança Pessoal',
-            'bairro': 'Dica Universal',
-            'descricao': 'Mantenha objetos de valor guardados. Evite usar celular em locais isolados.',
-            'prioridade': 'Média'
-        },
-        {
-            'tipo': 'Transporte Público',
-            'bairro': 'Centros Urbanos',
-            'descricao': 'Nos transportes públicos, mantenha-se atento aos pertences e evite dormir.',
-            'prioridade': 'Baixa'
-        },
-        {
-            'tipo': 'Emergência',
-            'bairro': 'Porto Alegre',
-            'descricao': 'Em caso de emergência: Polícia 190, SAMU 192, Bombeiros 193, Disque Denúncia 181.',
-            'prioridade': 'Alta'
-        },
-        {
-            'tipo': 'Tecnologia e Segurança',
-            'bairro': 'Dica Digital',
-            'descricao': 'Use aplicativos de localização compartilhada com familiares. Mantenha o celular carregado.',
-            'prioridade': 'Baixa'
-        },
-        {
-            'tipo': 'Vigilância Comunitária',
-            'bairro': 'Bairros Residenciais',
-            'descricao': 'Participe de grupos de WhatsApp do seu bairro para compartilhar informações de segurança.',
-            'prioridade': 'Baixa'
-        }
-    ]
-    
-    # Combinar alertas reais com dicas contextuais e gerais
-    all_tips = alerts.copy()
-    
-    # Priorizar dicas contextuais baseadas nos dados
-    all_tips.extend(contextual_tips)
-    
-    # Adicionar dicas gerais se ainda houver espaço
-    if len(all_tips) < 6:
-        needed_tips = 6 - len(all_tips)
-        all_tips.extend(general_tips[:needed_tips])
-    
-    # Limitar a 8 dicas para não sobrecarregar a interface
-    all_tips = all_tips[:8]
-    
-    # Renderizar cards de dicas usando o componente UI
-    ui_components.render_tip_cards(all_tips)
-    
-    # Adicionar informações adicionais em um expander
-    ui_components.render_additional_info_expander()
     
     # Verificar se há dados de operações policiais integrados
     has_police_data = not df_seguranca.empty and all(col in df_seguranca.columns for col in ['mortes_intervencao_policial', 'prisoes_realizadas', 'policiais_envolvidos'])
@@ -379,8 +329,21 @@ def main():
     
     with col1:
         st.subheader("🗺️ Mapa de Risco Interativo")
+        
+        # Criar mapa otimizado (sem cache devido a problemas de serialização)
+        # O cache é aplicado internamente nos dados, não no objeto mapa
         advanced_map = visualization.create_advanced_map(filtered_df, df_seguranca)
-        map_data = st_folium(advanced_map, width=700, height=500)
+        
+        # Configurações otimizadas do st_folium para evitar carregamento contínuo
+        map_data = st_folium(
+            advanced_map, 
+            width=700, 
+            height=500,
+            returned_objects=["last_object_clicked"],  # Limitar objetos retornados
+            feature_group_to_add=None,  # Não adicionar grupos de features dinamicamente
+            use_container_width=False,  # Usar largura fixa
+            key="risk_map"  # Chave única para evitar re-renderizações
+        )
     
     with col2:
         st.subheader("📊 Métricas em Tempo Real")
@@ -411,9 +374,30 @@ def main():
     # Gráficos avançados
     ui_components.render_advanced_charts(filtered_df)
     
-    # Exportar relatório e footer
-    ui_components.render_export_section(filtered_df)
-    ui_components.render_footer()
+    # Seção de exportação de relatório
+    st.subheader("📄 Exportar Relatório")
+    if st.button("📥 Gerar Relatório de Segurança"):
+        try:
+            report = visualization.export_report(filtered_df)
+            st.download_button(
+                label="📄 Download Relatório",
+                data=report,
+                file_name=f"relatorio_seguranca_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
+                mime="text/plain"
+            )
+            st.success("✅ Relatório gerado com sucesso!")
+        except Exception as e:
+            st.error(f"❌ Erro ao gerar relatório: {str(e)}")
+    
+    # Footer
+    st.markdown("---")
+    st.markdown(
+        "<div style='text-align: center; color: #666; padding: 20px;'>"
+        "🚨 <strong>Alerta POA</strong> - Sistema Avançado de Análise de Segurança Pública<br>"
+        "Desenvolvido para auxiliar na tomada de decisões baseadas em dados"
+        "</div>",
+        unsafe_allow_html=True
+    )
 
 if __name__ == "__main__":
     main()

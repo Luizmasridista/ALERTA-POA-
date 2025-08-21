@@ -81,28 +81,45 @@ def check_data_files():
     
     # Verificar se há dados coletados
     import glob
-    data_files = glob.glob('data/dados_criminalidade_poa_*.csv')
-    if data_files:
-        latest_file = max(data_files, key=os.path.getctime)
-        print(f"✅ Dados coletados encontrados: {latest_file}")
+    
+    # Verificar arquivos principais primeiro
+    main_data_files = [
+        'data/dados_criminalidade_poa.csv',
+        'data/dados_criminalidade_operacoes_integrado.csv',
+        'data/indice_seguranca_bairros.csv'
+    ]
+    
+    found_files = []
+    for file in main_data_files:
+        if os.path.exists(file):
+            found_files.append(file)
+    
+    if found_files:
+        print(f"✅ Dados coletados encontrados: {', '.join(found_files)}")
     else:
-        print("⚠️ Nenhum dado coletado encontrado")
-        print("💡 Execute: python scripts/data_collector_unified.py")
+        # Fallback para arquivos com timestamp
+        data_files = glob.glob('data/dados_criminalidade_poa_*.csv')
+        if data_files:
+            latest_file = max(data_files, key=os.path.getctime)
+            print(f"✅ Dados coletados encontrados: {latest_file}")
+        else:
+            print("⚠️ Nenhum dado coletado encontrado")
+            print("💡 Execute: python scripts/data_collector_unified.py")
     
     return True
 
-def start_streamlit():
+def start_streamlit(port=8501):
     """
-    Inicia o aplicativo Streamlit
+    Inicia o aplicativo Streamlit em uma porta específica
     """
-    print("🚀 Iniciando aplicativo Streamlit...")
+    print(f"🚀 Iniciando aplicativo Streamlit na porta {port}...")
     
     try:
         # Comando para iniciar o Streamlit
-        cmd = [sys.executable, '-m', 'streamlit', 'run', 'alerta_poa_final.py', '--server.port', '8501']
+        cmd = [sys.executable, '-m', 'streamlit', 'run', 'alerta_poa_final.py', '--server.port', str(port)]
         
-        print("📱 Aplicativo será aberto em: http://localhost:8501")
-        print("🌐 Acesso na rede: http://192.168.100.13:8501")
+        print(f"📱 Aplicativo será aberto em: http://localhost:{port}")
+        print(f"🌐 Acesso na rede: http://192.168.100.13:{port}")
         print("\n⏹️ Para parar o sistema, pressione Ctrl+C")
         
         # Executar comando
@@ -231,7 +248,7 @@ def main():
     
     if args.command == 'run':
         if check_dependencies() and check_data_files():
-            start_streamlit()
+            start_streamlit(port=8501)  # Default port
         else:
             print("❌ Sistema não pode ser iniciado devido a problemas")
             
